@@ -4,6 +4,20 @@ This is a pythonic ETL package that checks for new Letters of Map Revision (LOMR
 
 ### Installation and Set Up
 
+#### Assumptions
+
+This package makes use of both the `arcgis` and `arcpy` libraries using Python 3. According to the [ESRI documentation](https://developers.arcgis.com/python/guide/install-and-set-up/), `arcgis` requires Python 3.5+; meanwhile, arcpy requires a license for Pro. Ergo, this package assumes:
+
+* A Windows operating system
+* Anaconda Distribution installed
+  * Pro ships inside one by default
+  * Python3 is included as part of the base `arcgispro-py3` conda environment
+* An ArcGIS Pro2.1+ install
+* Python 3.5+
+* A `PATH` variable that knows the location of conda
+
+#### Let's Go!
+
 Clone this repository to your preferred project location:
 
 ```
@@ -11,13 +25,13 @@ cd your/preferred/project/location
 git clone "https://github.com/jessenestler/floodplains"
 ```
 
-This package makes use of both the `arcgis` and `arcpy` libraries using Python 3. The easiest way to install and use these packages is by cloning the conda environment that ships with Pro. First, make sure that the path to Pro's read-only conda environment is in you system `PATH`. For instructions on this, visit [this tutorial](https://helpdeskgeek.com/windows-10/add-windows-path-environment-variable/). Once this is complete, clone the environment in the command line:
+Now, clone the `arcgispro-py3` environment in the command line:
 
 ```
 conda create --name floodplains_env --clone arcgispro-py3
 ```
 
-ArcGIS Pro 2.1+ ships with the `arcgis` API pre-installed, but you should make sure to update it. If you are working with earlier vesrions of Pro, [ESRI's documentation](https://developers.arcgis.com/python/guide/install-and-set-up/) is helpful:
+Enter this new conda environment and make sure to update the `arcgis` package that comes preinstalled:
 
 ```
 conda activate floodplains_env
