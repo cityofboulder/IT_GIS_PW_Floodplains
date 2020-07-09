@@ -1,0 +1,67 @@
+#ArcGIS Pro project location
+aprx: ".\\.esri\\EditMaps.aprx"
+
+
+# Edit version configuration
+VERSIONING:
+  parent: "SDE.DEFAULT"
+  name: "UTIL_FloodplainEdits"
+
+# Email recipients
+EMAIL:
+  lomr-notification:
+    - "knappk@bouldercolorado.gov"
+    - "degroots@bouldercolorado.gov"
+    - "colemanb@bouldercolorado.gov"
+    - "shepc2@bouldercolorado.gov"
+    - "wellerc@bouldercolorado.gov"
+  data-steward:
+    - "nestlerj@bouldercolorado.gov"
+
+# Logging Configurations
+LOGGING:
+  version: 1
+  formatters:
+    only:
+      format: '%(asctime)s.%(msecs)03d : %(name)s : %(levelname)s : %(message)s'
+      datefmt: '%m/%d/%Y %H:%M:%S'
+  handlers:
+    console:
+      class: logging.StreamHandler
+      level: DEBUG
+      formatter: only
+      stream: ext://sys.stdout
+    file:
+      class: logging.FileHandler
+      level: INFO
+      formatter: only
+      filename: '.\\floodplains\\log\\floodplains.log'
+    email:
+      class: logging.handlers.SMTPHandler
+      mailhost: ["smtp.office365.com", 587]
+      fromaddr: "noreply@bouldercolorado.gov"
+      subject: "An error halted the Floodplain script"
+      credentials: ["noreply@bouldercolorado.gov", "password"]
+      secure: []
+      level: ERROR
+      formatter: only
+  loggers:
+    __main__:
+      level: INFO
+      handlers: [console, file, email]
+    floodplains.app:
+      level: INFO
+      handlers: [console, file]
+
+# Database configurations, credentials in separate untracked file
+DATABASE:
+  connections:
+    read: "S:\\GIS\\Share\\DatabaseConnections\\SQLGISProd3\\gis on gisprod3.sde"
+    edit: "S:\\GIS\\Share\\DatabaseConnections\\SQLGISProd3\\gisscr on gisprod3.sde"
+  info:
+    database_platform: "SQL_SERVER"
+    instance: "GISData"
+    database: "gisprod3"
+    account_authentication: "DATABASE_AUTH"
+    username: "gisscr"
+    version_type: "TRANSACTIONAL"
