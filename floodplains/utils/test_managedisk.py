@@ -6,18 +6,22 @@ import managedisk
 from pathlib import Path
 
 
+test_folders = [f'.{os.sep}listfiles', f'.{os.sep}otherlistfiles']
+test_files = [f'.{os.sep}listfiles{os.sep}testfile.txt',
+              f'.{os.sep}listfiles{os.sep}testfile.py',
+              f'.{os.sep}otherlistfiles{os.sep}test1.txt',
+              f'.{os.sep}otherlistfiles{os.sep}test.html']
+
+
 class TestListFiles(unittest.TestCase):
 
     def setUp(self):
-        test_files = [f'.{os.sep}listfiles{os.sep}testfile.txt',
-                      f'.{os.sep}listfiles{os.sep}testfile.py',
-                      f'.{os.sep}otherlistfiles{os.sep}test1.txt',
-                      f'.{os.sep}otherlistfiles{os.sep}test.html']
+        for folder in test_folders:
+            os.mkdir(os.path.abspath(folder))
         for f in test_files:
             Path(os.path.abspath(f)).touch()
 
-    def takeDown(self):
-        test_folders = [f'.{os.sep}listfiles', f'.{os.sep}otherlistfiles']
+    def tearDown(self):
         for f in test_folders:
             shutil.rmtree(os.path.abspath(f))
 
