@@ -1,6 +1,10 @@
 import cryptography
 import arcpy
 
+import floodplains.config as config
+
+log = config.logging.getLogger(__name__)
+
 
 def decrypt(key: str, token: str):
     """Decrypts encrypted text back into plain text.
@@ -40,14 +44,14 @@ def create_version(version_kwargs: dict):
         Parameters required for the arcpy.CreateVersion_management
         function
     """
-    # TODO: Add logging
+    log.info("Creating a new version.")
     status = 0
     while status != 4:
         result = arcpy.CreateVersion_management(**version_kwargs)
         status = result.status
         if status != 4:
-            # TODO: Add logging
-            pass
+            log.error((f"Version creation failed with ESRI code {status}. "
+                       "Retrying."))
 
 
 def create_versioned_connection():
