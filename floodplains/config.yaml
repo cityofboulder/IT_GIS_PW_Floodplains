@@ -36,7 +36,12 @@ LOGGING:
       class: logging.FileHandler
       level: INFO
       formatter: only
-      filename: '.\\floodplains\\log\\floodplains.log'
+      filename: '.\\floodplains\\log\\process.log'
+    warnfile:
+      class: logging.FileHandler
+      level: WARNING
+      formatter: only
+      filename: '.\\floodplains\\log\\errors.log'
     email:
       class: logging.handlers.SMTPHandler
       mailhost: ["smtp.office365.com", 587]
@@ -48,10 +53,13 @@ LOGGING:
   loggers:
     __main__:
       level: INFO
-      handlers: [console, file, email]
+      handlers: [console, file, warnfile, email]
     floodplains.app:
       level: INFO
       handlers: [console, file]
+    floodplains.managedb:
+      level: INFO
+      handlers: [console, file, warnfile]
 
 # Database configurations, credentials in separate untracked file
 DATABASE:
