@@ -24,6 +24,11 @@ def list_files(include: list, exclude: list = [], delete: bool = False):
         files on disk that were deleted.
     """
     listed = list()
+
+    if not isinstance(include, list):
+        include = [include]
+    if not isinstance(exclude, list):
+        exclude = [exclude]
     for root, _, files in os.walk(os.getcwd()):
         for f in files:
             if any(arg in f for arg in include) and all(
