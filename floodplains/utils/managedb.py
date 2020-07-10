@@ -1,3 +1,5 @@
+import os
+
 import arcpy
 
 import floodplains.config as config
@@ -5,7 +7,7 @@ import floodplains.config as config
 log = config.logging.getLogger(__name__)
 
 
-def create_version(version_kwargs: dict):
+def _create_version(version_kwargs: dict):
     """Creates a version using the dict variables defined in the project
     config.
 
@@ -31,8 +33,32 @@ def create_version(version_kwargs: dict):
                          "Retrying."))
 
 
-def create_versioned_connection():
-    pass
+def create_versioned_connection(version_kwargs: dict,
+                                connect_kwargs: dict) -> str:
+    """Creates an sde connection on disk and returns the path to that
+    file.
+
+    Parameters
+    ----------
+    version_kwargs : dict
+        Parameters required for the arcpy.CreateVersion func
+
+    connect_kwargs : dict
+        Parameters required for the arcpy.CreateDatabaseConnection func
+
+    Returns
+    -------
+    str
+        File path to the new database connection file
+    """
+    _create_version(version_kwargs)
+
+    log.info("Creating a versioned database connection.")
+    arcpy.CreateDatabaseConnection_management(**connect_kwargs)
+    filepath = os.path.join(connect_kwargs["out_folder_path"],
+                            connect_kwargs["out_name"])
+
+    return filepath
 
 
 def remove_version():
