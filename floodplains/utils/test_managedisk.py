@@ -14,6 +14,10 @@ test_files = [f'.{os.sep}listfiles{os.sep}poo.js',
 
 
 class TestListFiles(unittest.TestCase):
+    """Class to test the list_files function
+
+    A custom directory with files is set up and torn down for each
+    test."""
 
     def setUp(self):
         for folder in test_folders:
