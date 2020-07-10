@@ -1,6 +1,7 @@
 #ArcGIS Pro project location
-aprx: ".\\.esri\\EditMaps.aprx"
-
+ESRI:
+  root: ".\\.esri"
+  aprx_name: "EditMaps.aprx"
 
 # Edit version configuration
 VERSIONING:

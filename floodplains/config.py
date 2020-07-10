@@ -1,3 +1,4 @@
+import os
 import cryptography
 import getpass
 import logging
@@ -43,8 +44,11 @@ with open(r'.\floodplains\config.yaml') as config_file:
         creds['EMAIL']['password']]
     logging.config.dictConfig(config['LOGGING'])
 
+# ESRI config dict
+esri = config["ESRI"]
+esri_folder = os.path.abspath(esri["root"])
 # Pro project location
-aprx = config["aprx"]
+aprx_location = os.path.join(esri_folder, esri["aprx"])
 
 # Database config dict
 database = config["DATABASE"]
