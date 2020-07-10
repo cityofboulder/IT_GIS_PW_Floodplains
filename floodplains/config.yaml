@@ -4,8 +4,9 @@ aprx: ".\\.esri\\EditMaps.aprx"
 
 # Edit version configuration
 VERSIONING:
-  parent: "SDE.DEFAULT"
-  name: "UTIL_FloodplainEdits"
+  parent_version: "SDE.DEFAULT"
+  version_name: "UTIL_FloodplainEdits"
+  access_permission: "PRIVATE"
 
 # Email recipients
 EMAIL:

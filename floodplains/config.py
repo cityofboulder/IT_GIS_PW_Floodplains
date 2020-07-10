@@ -37,8 +37,6 @@ email = config["EMAIL"]
 notification = email["lomr-notification"]
 steward = email["data-steward"]
 
-# Version config dict
-version = config["VERSIONING"]
-# Creation properties
-parent = version["parent"]
-version_name = version["name"]
+# Version config dict (matches kwargs for arcpy.CreateVersion_management)
+version_info = config["VERSIONING"]
+version_info["in_workspace"] = edit_conn
