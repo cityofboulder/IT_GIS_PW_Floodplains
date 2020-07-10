@@ -11,3 +11,4 @@ __pycache__/
 
 # Project specific
 floodplains/credentials.yaml
+.esri/
