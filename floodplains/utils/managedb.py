@@ -50,8 +50,8 @@ def create_version(version_kwargs: dict):
         result = arcpy.CreateVersion_management(**version_kwargs)
         status = result.status
         if status != 4:
-            log.error((f"Version creation failed with ESRI code {status}. "
-                       "Retrying."))
+            log.warning((f"Version creation failed with ESRI code {status}. "
+                         "Retrying."))
 
 
 def create_versioned_connection():
