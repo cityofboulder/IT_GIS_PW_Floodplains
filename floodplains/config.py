@@ -44,27 +44,32 @@ with open(r'.\floodplains\config.yaml') as config_file:
         creds['EMAIL']['password']]
     logging.config.dictConfig(config['LOGGING'])
 
-# ESRI config dict
+# ESRI properties
 esri = config["ESRI"]
 esri_folder = os.path.abspath(esri["root"])
 # Pro project location
 aprx_location = os.path.join(esri_folder, esri["aprx"])
 
-# Database config dict
+# Database properties
 database = config["DATABASE"]
 # Connections
 read_conn = database["connections"]["read"]
 edit_conn = database["connections"]["edit"]
-# Properties
+
+# Version properties
+version_params = config["VERSIONING"]
+version_name = version_params["version_name"]
+version_params["in_workspace"] = edit_conn
+# Versioned SDE Connection
 db_params = database["info"]
-db_creds = database["credentials"]
+edit_user = db_params["username"].upper()
+db_params["version"] = f"{edit_user}.{version_name}"
+db_params["password"] = decrypt(creds["key"], creds["token"])
+db_params["out_folder_path"] = esri_folder
+db_params["out_name"] = db_params["version"] + ".sde"
 
 # Email config dict
 email = config["EMAIL"]
 # Different lists
 notification = email["lomr-notification"]
 steward = email["data-steward"]
-
-# Version config dict (matches kwargs for arcpy.CreateVersion_management)
-version_info = config["VERSIONING"]
-version_info["in_workspace"] = edit_conn
