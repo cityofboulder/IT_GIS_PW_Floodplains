@@ -1,31 +1,8 @@
-import cryptography
 import arcpy
 
 import floodplains.config as config
 
 log = config.logging.getLogger(__name__)
-
-
-def decrypt(key: str, token: str):
-    """Decrypts encrypted text back into plain text.
-
-    Parameters:
-    -----------
-    key : str
-        Encryption key
-    token : str
-        Encrypted text
-
-    Returns:
-    --------
-    str
-        Decrypted plain text
-    """
-
-    f = cryptography.fernet.Fernet(key)
-    decrypted = f.decrypt(bytes(token, 'utf-8'))
-
-    return decrypted.decode("utf-8")
 
 
 def create_version(version_kwargs: dict):
