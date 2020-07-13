@@ -45,6 +45,10 @@ class TestListFiles(unittest.TestCase):
         """Tests whether case is controlled"""
         self.assertEqual(len(managedisk.list_files(['poOp'])), 1)
 
+    def test_list(self):
+        self.assertEqual(
+            len(managedisk.list_files('otherlistfiles', '.css')), 1)
+
 
 if __name__ == '__main__':
     unittest.main()
