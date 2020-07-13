@@ -55,7 +55,7 @@ LOGGING:
     __main__:
       level: INFO
       handlers: [console, file, warnfile, email]
-    floodplains.app:
+    floodplains.etl:
       level: INFO
       handlers: [console, file]
     floodplains.managedb:
