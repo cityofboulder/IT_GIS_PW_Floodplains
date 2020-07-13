@@ -50,6 +50,10 @@ esri_folder = os.path.abspath(esri["root"])
 # Pro project location
 aprx_location = os.path.join(esri_folder, esri["aprx"])
 
+# Data properties
+urls = config["DATA"]["urls"]
+sde = config["DATA"]["sde"]
+
 # Database properties
 database = config["DATABASE"]
 # Connections

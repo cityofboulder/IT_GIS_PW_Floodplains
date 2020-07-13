@@ -9,6 +9,15 @@ VERSIONING:
   version_name: "UTIL_FloodplainEdits"
   access_permission: "PRIVATE"
 
+# Data paths
+DATA:
+  urls:
+    city: "https://maps.bouldercolorado.gov/arcgis/rest/services/plan/CityLimits/MapServer/0"
+    nfhl: "https://hazards.fema.gov/gis/nfhl/rest/services/public/NFHL/MapServer"
+  sde:
+    spatialref: 2876 # NAD83(HARN) / Colorado North (ftUS)
+    feature: "GISPROD3.UTIL.Floodplain"
+
 # Email recipients
 EMAIL:
   lomr-notification:
