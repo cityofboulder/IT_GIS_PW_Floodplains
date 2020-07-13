@@ -1,4 +1,5 @@
 import floodplains.config as config
+import floodplains.utils.esriapi as api
 
 import arcgis
 
@@ -9,29 +10,24 @@ log = config.logging.getLogger(__name__)
 
 def main():
     # Step 1: Identify relevant feature services
+    sr = config.sde["spatialref"]
     city = arcgis.features.FeatureLayer(config.urls["city"])
     nfhl = arcgis.features.FeatureLayerCollection(config.urls["nfhl"])
     lomr = nfhl.layers[1]
     sfha = nfhl.layers[27]
 
     # Step 2: Create spatial filter object for city limits
-    # This will be used to test whether a LOMR has been added inside the city
-    sr = config.sde["spatialref"]
-    anon_gis = arcgis.gis.GIS()
-    city_lims = city.query(out_sr=sr)
-    city_geoms = [poly.geometry for poly in city_lims.features]
-    city_union = arcgis.geometry.union(
-        spatial_ref=sr, geometries=city_geoms, gis=anon_gis)
-    geom_filter = arcgis.geometry.filters.intersects(city_union, sr=sr)
+    geom_filter = api.create_spatial_filter(city, sr)
 
-    # EXTRACT
-    # Step 3a: Extract LOMRs based on the desired criteria
-    # Step 3b: Find the most recent update to our internal floodplains through
-    # a connection to sde (using ADOPTDATE)
-    # Step 3c: Identify LOMRs that are more recent than the most recent
-    # floodplain update, and remove potential duplicates
-    # Step 4: If no new lomrs exist, send an email to the steward
-    # otherwise, extract new sfha delineations using the lomr boundaries
+    # Step 3: Extract LOMRs based on spatial filters and SQL query
+    date_str = '2018-08-16'  # <- will change based on SDE
+    where = f"STATUS = 'Effective' AND EFF_DATE > '{date_str}'"
+    boulder_lomrs = api.query_lomr(lomr, where, geom_filter, sr)
+
+    # Step 4: Check if updates are necessary
+    if len(boulder_lomrs.features) == 0:
+        # send email
+        pass
 
     # TRANSFORM
     # Step 5: Create a new versioned connection for city floodplains
