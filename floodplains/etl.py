@@ -18,3 +18,13 @@ def main():
     nfhl = arcgis.features.FeatureLayerCollection(urls["nfhl"])
     lomr = nfhl.layers[1]
     sfha = nfhl.layers[27]
+
+    # Step 2: Create spatial filter object for city limits
+    # This will be used to test whether a LOMR has been added inside the city
+    sr = 2876  # NAD83(HARN) / Colorado North (ftUS)
+    anon_gis = arcgis.gis.GIS()
+    city_lims = city.query(out_sr=sr)
+    city_geoms = [poly.geometry for poly in city_lims.features]
+    city_union = arcgis.geometry.union(
+        spatial_ref=sr, geometries=city_geoms, gis=anon_gis)
+    geom_filter = arcgis.geometry.filters.intersects(city_union, sr=sr)
