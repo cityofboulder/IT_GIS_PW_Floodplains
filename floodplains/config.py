@@ -1,11 +1,12 @@
 import os
-import cryptography
 import getpass
 import logging
 import logging.config
 import logging.handlers
 
 import yaml
+
+from cryptography.fernet import Fernet
 
 
 def decrypt(key: str, token: str):
@@ -24,7 +25,7 @@ def decrypt(key: str, token: str):
         Decrypted plain text
     """
 
-    f = cryptography.fernet.Fernet(key)
+    f = Fernet(key)
     decrypted = f.decrypt(bytes(token, 'utf-8'))
 
     return decrypted.decode("utf-8")
@@ -33,10 +34,10 @@ def decrypt(key: str, token: str):
 username = getpass.getuser()
 user_email = f"{username}@bouldercolorado.gov"
 
-with open(r'.\floodplains\credentials.yaml') as cred_file:
+with open(f".{os.sep}floodplains{os.sep}credentials.yaml") as cred_file:
     creds = yaml.safe_load(cred_file.read())
 
-with open(r'.\floodplains\config.yaml') as config_file:
+with open(f".{os.sep}floodplains{os.sep}config.yaml") as config_file:
     config = yaml.safe_load(config_file.read())
     config['LOGGING']['handlers']['email']['toaddrs'] = user_email
     config['LOGGING']['handlers']['email']['credentials'] = [
@@ -48,7 +49,7 @@ with open(r'.\floodplains\config.yaml') as config_file:
 esri = config["ESRI"]
 esri_folder = os.path.abspath(esri["root"])
 # Pro project location
-aprx_location = os.path.join(esri_folder, esri["aprx"])
+aprx_location = os.path.join(esri_folder, esri["aprx_name"])
 
 # Data properties
 urls = config["DATA"]["urls"]
@@ -66,9 +67,10 @@ version_name = version_params["version_name"]
 version_params["in_workspace"] = edit_conn
 # Versioned SDE Connection
 db_params = database["info"]
+db_creds = creds["DATABASE"]
 edit_user = db_params["username"].upper()
 db_params["version"] = f"{edit_user}.{version_name}"
-db_params["password"] = decrypt(creds["key"], creds["token"])
+db_params["password"] = decrypt(db_creds["key"], db_creds["token"])
 db_params["out_folder_path"] = esri_folder
 db_params["out_name"] = db_params["version"] + ".sde"
 
