@@ -17,15 +17,18 @@ def main():
     sfha = nfhl.layers[27]
 
     # Step 2: Create spatial filter object for city limits
+    log.info("Creating spatial filter of citty limits")
     geom_filter = api.create_spatial_filter(city, sr)
 
     # Step 3: Extract LOMRs based on spatial filters and SQL query
+    log.info("Querying the LOMR feature service.")
     date_str = '2018-08-16'  # <- will change based on SDE
     where = f"STATUS = 'Effective' AND EFF_DATE > '{date_str}'"
     boulder_lomrs = api.query_lomr(lomr, where, geom_filter, sr)
 
     # Step 4: Check if updates are necessary
     if len(boulder_lomrs.features) == 0:
+        log.info("Notifying steward that no changes were made in Boulder.")
         # send email
         pass
 
