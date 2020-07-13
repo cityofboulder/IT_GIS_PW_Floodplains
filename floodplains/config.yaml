@@ -57,7 +57,7 @@ LOGGING:
       handlers: [console, file, warnfile, email]
     floodplains.etl:
       level: INFO
-      handlers: [console, file]
+      handlers: [console, file, warnfile]
     floodplains.managedb:
       level: INFO
       handlers: [console, file, warnfile]
