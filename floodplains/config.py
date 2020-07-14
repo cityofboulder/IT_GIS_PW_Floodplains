@@ -74,8 +74,11 @@ db_params["password"] = decrypt(db_creds["key"], db_creds["token"])
 db_params["out_folder_path"] = esri_folder
 db_params["out_name"] = db_params["version"] + ".sde"
 
-# Email config dict
-email = config["EMAIL"]
+# Email credentials
+sender = creds["EMAIL"]["address"]
+password = creds["EMAIL"]["password"]
+# Email recipient config dict
+recipients = config["EMAIL"]
 # Different lists
-notification = email["lomr-notification"]
-steward = email["data-steward"]
+notification = recipients["lomr-notification"]
+steward = recipients["data-steward"]
