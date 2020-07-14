@@ -84,7 +84,7 @@ def query_lomr(in_layer: arcgis.features.layer.FeatureLayer,
 
 
 def extract_sfha(in_layer: arcgis.features.layer.FeatureLayer,
-                 boundaries: arcgis.features.layer.FeatureLayer,
+                 boundaries: arcgis.features.layer.FeatureSet,
                  clause: str, out_fields: list, sr: int):
     """Extracts all the SFHA floodplains that are within some boundaries
     into a pandas dataframe.
@@ -98,7 +98,7 @@ def extract_sfha(in_layer: arcgis.features.layer.FeatureLayer,
     ----------
     in_layer : arcgis.features.layer.FeatureLayer
         A feature layer derived from a feature or map service endpoint
-    boundaries : arcgis.features.layer.FeatureLayer
+    boundaries : arcgis.features.layer.FeatureSet
         The boundaries in which to evaluate "insidedness"
     clause : str
         Conditions used to restrict output, written in SQL syntax (e.g.
