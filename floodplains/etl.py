@@ -8,6 +8,16 @@ log = config.logging.getLogger(__name__)
 
 
 def extract():
+    """The main function used to extract new SFHAs from FEMA's REST
+    Endpoint.
+
+    The function uses data from FEMA's map services and Boulder's map
+    service for city limits to query whether new LOMRs have been
+    effected inside the city. If there are new LOMRs within the city,
+    the function returns a spatial dataframe of all the SFHA
+    delineations that were inside those new LOMRs. If no new LOMRs are
+    found, than nothing is returned.
+    """
     # Step 1: Identify relevant feature services
     sr = config.sde["spatialref"]
     city = arcgis.features.FeatureLayer(config.urls["city"])
