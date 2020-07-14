@@ -54,8 +54,8 @@ def email_body(body: str) -> str:
     return insert
 
 
-def send_email(sender: str, password: str, recipients: list, subject: str,
-               body: str, *attachments):
+def send_email(sender: str, password: str, recipients: list, body: str,
+               *attachments):
     """Send and email through a Microsoft Office 365 account.
 
     Parameters
@@ -66,8 +66,6 @@ def send_email(sender: str, password: str, recipients: list, subject: str,
         The email password
     recipients : list
         A list of recipients
-    subject : str
-        Email subject
     body : str
         The main body of the email, written in HTML
     """
@@ -76,7 +74,7 @@ def send_email(sender: str, password: str, recipients: list, subject: str,
     msg = MIMEMultipart('alternative')
     msg['From'] = sender
     msg['To'] = "; ".join(recipients)
-    msg['Subject'] = subject
+    msg['Subject'] = "\N{Water Wave} Floodplain Update \N{Water Wave}"
 
     if attachments:
         for item in attachments:
