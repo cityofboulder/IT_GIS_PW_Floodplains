@@ -31,18 +31,25 @@ def main():
         log.info("Notifying steward that no changes were made in Boulder.")
         # send email
         pass
+    else:
+        log.info("Extracting SFHAs.")
+        where = "DFIRM_ID = '08013C'"
+        fields = ['FLD_AR_ID', 'STUDY_TYP', 'FLD_ZONE',
+                  'ZONE_SUBTY', 'SFHA_TF', 'STATIC_BFE', 'DEPTH']
+        fema_flood, summary = api.extract_sfha(
+            sfha, boulder_lomrs, where, fields, sr)
 
     # TRANSFORM
-    # Step 5: Create a new versioned connection for city floodplains
-    # Step 6a: Transform sfha delineations natively (dicts or pandas)
-    # Step 6b: Dissolve new delins based on COB standards
+    # Step 5a: Transform sfha delineations natively (dicts or pandas)
+    # Step 5b: Dissolve new delins based on COB standards
 
     # LOAD
-    # Step 7a: Make edits to the version
-    # Step 7b: Cut existing floodplains with LOMR boundaries
-    # Step 7c: Make existing floodplains inside LOMR bounds "Inactive"
-    # Step 7d: Add the transformed sfhas into the version
+    # Step 6a: Create a new versioned connection for city floodplains
+    # Step 6b: Make edits to the version
+    # Step 6c: Cut existing floodplains with LOMR boundaries
+    # Step 6d: Make existing floodplains inside LOMR bounds "Inactive"
+    # Step 6e: Add the transformed sfhas into the version
 
     # NOTIFY
-    # Step 8a: Notify steward of new version edits
-    # Step 8b: Notify SMEs that edits are pending and new LOMRs are available
+    # Step 7a: Notify steward of new version edits
+    # Step 7b: Notify SMEs that edits are pending and new LOMRs are available
