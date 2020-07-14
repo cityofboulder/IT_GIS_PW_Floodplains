@@ -38,7 +38,8 @@ def extract():
     # Step 4: If there are "more than zero" new LOMRs, continue ETL process
     if len(boulder_lomrs.features) > 0:
         log.info("Extracting SFHAs.")
-        where = "DFIRM_ID = '08013C'"
+        where = ("DFIRM_ID = '08013C' AND ZONE_SUBTY <> 'AREA OF MINIMAL "
+                 "FLOOD HAZARD'")
         fields = ['FLD_AR_ID', 'STUDY_TYP', 'FLD_ZONE',
                   'ZONE_SUBTY', 'SFHA_TF', 'STATIC_BFE', 'DEPTH']
         fema_flood, summary = api.extract_sfha(
