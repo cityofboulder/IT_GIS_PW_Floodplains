@@ -6,6 +6,54 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 
 
+def email_body(body: str) -> str:
+    """Places the body parameter into an HTML template for the email.
+
+    Parameters
+    ----------
+    insert : str
+        The main text of the email
+
+    Returns
+    -------
+    str
+        HTML email body
+    """
+    insert = f"""\
+                <html>
+                    <head>
+                        <style>
+                        table {{
+                            border-collapse: collapse;
+                            border: 1px solid;
+                        }}
+
+                        td, th {{
+                            border: 1px solid rgb(190,190,190);
+                            padding: 10px 10px;
+                            letter-spacing: 0.7px;
+                        }}
+
+                        td {{
+                            text-align: center;
+                        }}
+                        </style>
+                    </head>
+                    <body>
+                        <p>
+                        Dear Human,<br><br>
+                        {body}
+                        </p>
+                        <p>
+                        Beep Boop Beep,<br><br>
+                        End Transmission
+                        </p>
+                    </body>
+                </html>
+                """
+    return insert
+
+
 def send_email(sender: str, password: str, recipients: list, subject: str,
                body: str, *attachments):
     """Send and email through a Microsoft Office 365 account.
