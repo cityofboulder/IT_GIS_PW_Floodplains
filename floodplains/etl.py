@@ -48,9 +48,17 @@ def extract():
         return None
 
 
-# TRANSFORM
-# Step 5a: Transform sfha delineations natively (dicts or pandas)
-# Step 5b: Dissolve new delins based on COB standards
+def transform(sfha_sdf):
+    """Transforms SFHA delineations to meet City of Boulder standards.
+
+    Parameters
+    ----------
+    sfha_sdf : Pandas DataFrame
+        The data returned from the extract function
+    """
+    pass
+    # Step 5a: Transform sfha delineations natively (dicts or pandas)
+    # Step 5b: Dissolve new delins based on COB standards
 
 # LOAD
 # Step 6a: Create a new versioned connection for city floodplains
