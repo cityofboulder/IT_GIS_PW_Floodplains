@@ -73,12 +73,13 @@ def query_lomr(in_layer: arcgis.features.layer.FeatureLayer,
     lomrs = in_layer.query(where=clause,
                            geometry_filter=g_filter,
                            out_sr=sr)
-    # Drop duplicate Case Numbers and Geometries.
-    temp = lomrs.sdf
-    temp['GEOM_STR'] = str(temp['SHAPE'])
-    temp.drop_duplicates(subset=['CASE_NO', 'GEOM_STR'], inplace=True)
-    temp.sort_values(by='EFF_DATE', inplace=True, ascending=False)
-    lomrs = arcgis.features.FeatureSet.from_dataframe(temp)
+    # Drop duplicate Case Numbers and Geometries if features are returned
+    if lomrs.features:
+        temp = lomrs.sdf
+        temp['GEOM_STR'] = str(temp['SHAPE'])
+        temp.drop_duplicates(subset=['CASE_NO', 'GEOM_STR'], inplace=True)
+        temp.sort_values(by='EFF_DATE', inplace=True, ascending=False)
+        lomrs = arcgis.features.FeatureSet.from_dataframe(temp)
 
     return lomrs
 
