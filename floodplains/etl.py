@@ -32,7 +32,7 @@ def extract():
         fields = ['FLD_AR_ID', 'STUDY_TYP', 'FLD_ZONE',
                   'ZONE_SUBTY', 'SFHA_TF', 'STATIC_BFE', 'DEPTH']
         fema_flood, summary = api.extract_sfha(
-            sfha, lomr, where, fields, sr)
+            sfha, boulder_lomrs, where, fields, sr)
         return fema_flood
     else:
         return None
