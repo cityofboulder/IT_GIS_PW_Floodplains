@@ -1,6 +1,7 @@
 import floodplains.config as config
 
 import arcgis
+import pandas as pd
 
 # Initialize log for esriapicalls
 log = config.logging.getLogger(__name__)
@@ -152,3 +153,38 @@ def extract_sfha(in_layer: arcgis.features.layer.FeatureLayer,
     subset.drop_duplicates(subset=['FLD_AR_ID'], inplace=True)
 
     return subset, catalog
+
+
+def calc_adoptdate(sfha, lomr):
+    """Calculates the date a given SFHA was adopted based on the LOMR
+    boundary in which it resides.
+
+    If an SFHA resides in two LOMR boundaries at once, it will be
+    assigned the ADOPTDATE of which LOMR area is most recent.
+
+    Parameters
+    ----------
+    sfha : ESRI Spatial Dataframe
+        The Special Flood Hazard Area information extracted from an ESRI
+        API call
+    lomr : ESRI Feature Set
+        The Letter of Map Revision areas extracted from an API call to
+        FEMA's Rest Endpoint
+
+    Returns
+    -------
+    ESRI Spatial Dataframe
+        A copy of the incoming SFHA dataframe, but with a new
+        "ADOPTDATE" field appended.
+    """
+    # Spatial join of LOMRs and SFHAs
+    if not isinstance(sfha, pd.DataFrame()):
+        sfha = sfha.sdf
+    new_sdf = sfha.spatial.join(lomr.sdf)
+    # Sort by effective date, most recent first
+    new_sdf.sort_values(by=['EFF_DATE'], inplace=True, ascending=False)
+    # Remove duplicate FLD_AR_IDs, keep the first dup record encountered.
+    new_sdf.drop_duplicates(subset=['FLD_AR_ID'], inplace=True, keep='first')
+    new_sdf.rename(columns={"EFF_DATE": "ADOPTDATE"}, inplace=True)
+    # Return new spatial dataframe
+    return new_sdf
