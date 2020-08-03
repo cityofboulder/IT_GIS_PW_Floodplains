@@ -204,8 +204,8 @@ def calc_floodplain(row):
 
     Returns
     -------
-    [type]
-        [description]
+    str
+        The SFHA floodplain designation
     """
     if row["SFHA_TF"] == "T":
         if row["ZONE_SUBTY"] == 'FLOODWAY':
@@ -219,3 +219,28 @@ def calc_floodplain(row):
         else:
             floodplain = None
     return floodplain
+
+
+def calc_femazone(row):
+    """Extracts the FEMAZONE of an SFHA based on each row's attributes.
+
+    This function acts on individual rows of a pandas DataFrame using
+    the apply built-in.
+
+    Parameters
+    ----------
+    row : Pandas Series
+        A row of a pandas DataFrame
+
+    Returns
+    -------
+    str
+        The flood zone designation for an SFHA
+    """
+    if row["FLD_ZONE"] == 'AO':
+        zone = 'AO' + str(round(row['DEPTH']))
+    elif row["FLD_ZONE"] == 'AH':
+        zone = 'AH' + str(round(row["STATIC_BFE"]))
+    else:
+        zone = row["FLD_ZONE"]
+    return zone
