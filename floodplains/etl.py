@@ -50,21 +50,44 @@ def extract():
         return None
 
 
-def transform(sfha_sdf):
+def transform(sfha_sdf, lomr_fs):
     """Transforms SFHA delineations to meet City of Boulder standards.
+
+    All transformations are done to the DataFrame in-place.
 
     Parameters
     ----------
     sfha_sdf : Pandas DataFrame
-        The data returned from the extract function
+        Boulder's new special flood hazard areas
+    lomr_fs : arcgis.features.FeatureSet
+        Boulder's new LOMR areas
     """
-    pass
     # Step 5: Query the city's floodplain feature service
     city_flood = arcgis.features.FeatureLayer(config.urls["city_flood"])
     compare = city_flood.query(out_fields=['DRAINAGE'], out_sr=sr)
 
-    # Step 5b: Transform sfha delineations natively (dicts or pandas)
-    # Step 5b: Dissolve new delins based on COB standards
+    # Step 6: Calculate all fields
+    log.info("Calculating DRAINAGE.")
+    api.calc_drainages(sfha_sdf, compare, sr)
+    log.info("Calculating ADOPTDATE.")
+    api.calc_adoptdate(sfha_sdf, lomr_fs)
+    log.info("Calculating FLOODPLAIN.")
+    sfha_sdf = sfha_sdf.apply(api.calc_floodplain, axis=1)
+    log.info("Calculating FEMAZONE.")
+    sfha_sdf = sfha_sdf.apply(api.calc_femazone, axis=1)
+    log.info("Calculating INEFFDATE.")
+    sfha_sdf["INEFFDATE"] = None
+    log.info("Calculating LIFECYCLE.")
+    sfha_sdf["LIFECYCLE"] = "Active"
+    log.info("Calculating SOURCE.")
+    sfha_sdf["SOURCE"] = "FEMA"
+
+    # Step 7: Drop all non-essential fields and rows
+    sfha_sdf = sfha_sdf[sfha_sdf["ZONE_SUBTY"]
+                        != "AREA OF MINIMAL FLOOD HAZARD"]
+    sfha_sdf = sfha_sdf[["FLOODPLAIN", "DRAINAGE", "FEMAZONE",
+                         "LIFECYCLE", "ADOPTDATE", "INEFFDATE", "SOURCE",
+                         "SHAPE"]]
 
 # LOAD
 # Step 6a: Create a new versioned connection for city floodplains
