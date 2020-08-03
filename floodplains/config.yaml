@@ -14,6 +14,7 @@ DATA:
   urls:
     city: "https://maps.bouldercolorado.gov/arcgis/rest/services/plan/CityLimits/MapServer/0"
     nfhl: "https://hazards.fema.gov/gis/nfhl/rest/services/public/NFHL/MapServer"
+    city_flood: "https://maps.bouldercolorado.gov/arcgis3/rest/services/util/Floodplain/MapServer/3"
   sde:
     spatialref: 2876 # NAD83(HARN) / Colorado North (ftUS)
     feature: "GISPROD3.UTIL.Floodplain"
