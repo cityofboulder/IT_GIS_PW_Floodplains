@@ -6,6 +6,9 @@ import arcgis
 # Initiate a logger for etl
 log = config.logging.getLogger(__name__)
 
+# Define spatial reference for use in all functions
+sr = config.sde["spatialref"]
+
 
 def extract():
     """The main function used to extract new SFHAs from FEMA's REST
@@ -19,7 +22,6 @@ def extract():
     found, than nothing is returned.
     """
     # Step 1: Identify relevant feature services
-    sr = config.sde["spatialref"]
     city = arcgis.features.FeatureLayer(config.urls["city"])
     nfhl = arcgis.features.FeatureLayerCollection(config.urls["nfhl"])
     lomr = nfhl.layers[1]
