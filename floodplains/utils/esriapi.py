@@ -178,7 +178,7 @@ def calc_adoptdate(sfha, lomr):
         "ADOPTDATE" field appended.
     """
     # Spatial join of LOMRs and SFHAs
-    if not isinstance(sfha, pd.DataFrame()):
+    if not isinstance(sfha, pd.DataFrame):
         sfha = sfha.sdf
     new_sdf = sfha.spatial.join(lomr.sdf)
     # Sort by effective date, most recent first
