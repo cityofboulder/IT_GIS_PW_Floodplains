@@ -45,9 +45,9 @@ def extract():
                   'ZONE_SUBTY', 'SFHA_TF', 'STATIC_BFE', 'DEPTH']
         fema_flood, summary = api.extract_sfha(
             sfha, boulder_lomrs, where, fields, sr)
-        return fema_flood
+        return fema_flood, boulder_lomrs
     else:
-        return None
+        return None, None
 
 
 def transform(sfha_sdf, lomr_fs):

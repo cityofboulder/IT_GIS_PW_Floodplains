@@ -9,10 +9,10 @@ log = config.logging.getLogger(__name__)
 if __name__ == "__main__":
     try:
         log.info("Initiating extraction.")
-        output = etl.extract()
-        if output:
-            # log.info("Initiating transformation.")
-            # etl.transform(output)
+        new_sfhas, new_lomrs = etl.extract()
+        if new_sfhas:
+            log.info("Initiating transformation.")
+            etl.transform(new_sfhas, new_lomrs)
             # log.info("Initiating load.")
             # etl.load()
             pass
