@@ -244,3 +244,118 @@ def calc_femazone(row):
     else:
         zone = row["FLD_ZONE"]
     return zone
+
+
+def calc_drainages(to_calc, comparison, spatial_ref: int):
+    """Checks if geometries in the "to_calc" DataFrame are inside the
+    geometries of the "comparison" FeatureSet, and assigns the DRAINAGE
+    variable accordingly.
+
+    Modifies the input DataFrame called "to_calc" with a new DRAINAGE
+    column.
+
+    Parameters
+    ----------
+    to_calc : pandas.DataFrame
+        The features that require geometry comparisons.
+    comparison : arcgis.features.FeatureSet
+        The features to compare geometries against.
+    spatial_ref : int
+        Output spatial reference
+
+    Returns
+    -------
+    None
+        No output, this function modifies the "to_calc" input in-place.
+    """
+    # ESRI requires that an anonymous instance of a Portal is started
+    # in order to use the geometry union function
+    temp_gis = arcgis.gis.GIS()
+
+    # Union the city drainages
+    def union_drainages(row):
+        """Unions a given DataFrame row into a new ESRI Geometry object.
+
+        At time of writing this script, geometries coming out of the
+        union function come out with an empty spatial reference. This
+        is a workaround solution to this problem.
+
+        This function acts on individual rows of a pandas DataFrame
+        using the apply built-in.
+
+        Parameters
+        ----------
+        row : pandas.Series
+            A row of a pandas DataFrame
+
+        Returns
+        -------
+        arcgis.geometry.Geometry
+            An arcgis Geometry object
+        """
+        no_sr = arcgis.geometry.union(
+            geometries=row["SHAPE"], spatial_ref=spatial_ref, gis=temp_gis)
+        geom = arcgis.geometry.Geometry(
+            {"rings": no_sr.rings, "spatialReference": {"wkid": spatial_ref}})
+        return geom
+
+    def rand_point_in_poly(row):
+        """Get a random, representative point inside a polygon.
+
+        This function requires the shapely library, and acts on
+        individual rows of a pandas DataFrame using the apply built-in.
+
+        Parameters
+        ----------
+        row : pandas.Series
+            A row of a pandas DataFrame
+
+        Returns
+        -------
+        arcgis.geometry.Geometry
+            A point geometry projected to the parent function's
+            spatial_ref
+        """
+        rand = row["SHAPE"].as_shapely.representative_point()
+        point = arcgis.geometry.Geometry(
+            {"x": rand.x, "y": rand.y,
+                "spatialReference": {"wkid": spatial_ref}})
+        return point
+
+    def check_within(row):
+        """Checks whether the representative point inside the supplied
+        DataFrame row is within the unioned drainages of the city.
+
+        This function acts on individual rows of a pandas DataFrame
+        using the apply built-in.
+
+        Parameters
+        ----------
+        row : pandas.Series
+            A row of a pandas DataFrame
+
+        Returns
+        -------
+        str
+            The name of the drainage within which the point lies
+        """
+        for item in drain_fs.features:
+            arcgis_point = rand_point_in_poly(row)
+            g = arcgis.geometry.Geometry(item.geometry)
+            if g.contains(arcgis_point):
+                drain = item.attributes["DRAINAGE"]
+                return drain
+
+    # Create a new pandas DataFrame, where each row is grouped by drainage,
+    # and the geometries for each drainage are put into a list
+    drainages = pd.DataFrame(comparison.sdf.groupby("DRAINAGE")[
+                             "SHAPE"].apply(list)).reset_index()
+    # Convert the list of geometries for each DataFrame row into
+    # an ESRI Geometry object.
+    drainages["SHAPE"] = drainages.apply(union_drainages, axis=1)
+
+    # Convert the DataFrame into a FeatureSet
+    drain_fs = arcgis.features.FeatureSet.from_dataframe(drainages)
+
+    # Calculate all drainages
+    to_calc["DRAINAGE"] = to_calc.apply(check_within, axis=1)
