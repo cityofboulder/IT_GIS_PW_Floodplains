@@ -188,3 +188,34 @@ def calc_adoptdate(sfha, lomr):
     new_sdf.rename(columns={"EFF_DATE": "ADOPTDATE"}, inplace=True)
     # Return new spatial dataframe
     return new_sdf
+
+
+def calc_floodplain(row):
+    """Extracts the floodplain designation of an SFHA based on each
+    row's attributes.
+
+    This function acts on individual rows of a pandas DataFrame using
+    the apply built-in.
+
+    Parameters
+    ----------
+    row : Pandas Series
+        A row of a pandas DataFrame
+
+    Returns
+    -------
+    [type]
+        [description]
+    """
+    if row["SFHA_TF"] == "T":
+        if row["ZONE_SUBTY"] == 'FLOODWAY':
+            floodplain = 'Conveyance Zone'
+        else:
+            floodplain = '100-Year'
+    else:
+        if row["ZONE_SUBTY"] in ('0.2 PCT ANNUAL CHANCE FLOOD HAZARD',
+                                 'AREA WITH REDUCED FLOOD RISK DUE TO LEVEE'):
+            floodplain = '500-Year'
+        else:
+            floodplain = None
+    return floodplain
