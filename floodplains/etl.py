@@ -59,7 +59,11 @@ def transform(sfha_sdf):
         The data returned from the extract function
     """
     pass
-    # Step 5a: Transform sfha delineations natively (dicts or pandas)
+    # Step 5: Query the city's floodplain feature service
+    city_flood = arcgis.features.FeatureLayer(config.urls["city_flood"])
+    compare = city_flood.query(out_fields=['DRAINAGE'], out_sr=sr)
+
+    # Step 5b: Transform sfha delineations natively (dicts or pandas)
     # Step 5b: Dissolve new delins based on COB standards
 
 # LOAD
