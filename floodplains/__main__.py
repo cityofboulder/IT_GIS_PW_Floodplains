@@ -10,7 +10,7 @@ if __name__ == "__main__":
     try:
         log.info("Initiating extraction.")
         new_sfhas, new_lomrs = etl.extract()
-        if new_sfhas:
+        if new_sfhas is not None:
             log.info("Initiating transformation.")
             etl.transform(new_sfhas, new_lomrs)
             # log.info("Initiating load.")
