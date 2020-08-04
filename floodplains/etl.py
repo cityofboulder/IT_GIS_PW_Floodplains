@@ -70,7 +70,7 @@ def transform(sfha_sdf, lomr_fs):
     log.info("Calculating DRAINAGE.")
     api.calc_drainages(sfha_sdf, compare, sr)
     log.info("Calculating ADOPTDATE.")
-    api.calc_adoptdate(sfha_sdf, lomr_fs)
+    sfha_sdf = api.calc_adoptdate(sfha_sdf, lomr_fs)
     log.info("Calculating FLOODPLAIN.")
     sfha_sdf["FLOODPLAIN"] = sfha_sdf.apply(api.calc_floodplain, axis=1)
     log.info("Calculating FEMAZONE.")
@@ -88,6 +88,7 @@ def transform(sfha_sdf, lomr_fs):
     sfha_sdf = sfha_sdf[["FLOODPLAIN", "DRAINAGE", "FEMAZONE",
                          "LIFECYCLE", "ADOPTDATE", "INEFFDATE", "SOURCE",
                          "SHAPE"]]
+    return sfha_sdf
 
 # LOAD
 # Step 6a: Create a new versioned connection for city floodplains
