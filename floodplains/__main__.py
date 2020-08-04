@@ -12,7 +12,7 @@ if __name__ == "__main__":
         new_sfhas, new_lomrs = etl.extract()
         if new_sfhas is not None:
             log.info("Initiating transformation.")
-            etl.transform(new_sfhas, new_lomrs)
+            transformed = etl.transform(new_sfhas, new_lomrs)
             # log.info("Initiating load.")
             # etl.load()
             pass
