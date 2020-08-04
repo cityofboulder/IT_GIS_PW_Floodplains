@@ -72,9 +72,9 @@ def transform(sfha_sdf, lomr_fs):
     log.info("Calculating ADOPTDATE.")
     api.calc_adoptdate(sfha_sdf, lomr_fs)
     log.info("Calculating FLOODPLAIN.")
-    sfha_sdf = sfha_sdf.apply(api.calc_floodplain, axis=1)
+    sfha_sdf["FLOODPLAIN"] = sfha_sdf.apply(api.calc_floodplain, axis=1)
     log.info("Calculating FEMAZONE.")
-    sfha_sdf = sfha_sdf.apply(api.calc_femazone, axis=1)
+    sfha_sdf["FEMAZONE"] = sfha_sdf.apply(api.calc_femazone, axis=1)
     log.info("Calculating INEFFDATE.")
     sfha_sdf["INEFFDATE"] = None
     log.info("Calculating LIFECYCLE.")
