@@ -1,5 +1,6 @@
 import floodplains.config as config
 import floodplains.utils.esriapi as api
+import floodplains.utils.managedb as db
 import arcgis
 
 
@@ -90,8 +91,12 @@ def transform(sfha_sdf, lomr_fs):
                          "SHAPE"]]
     return sfha_sdf
 
-# LOAD
-# Step 6a: Create a new versioned connection for city floodplains
+
+def load():
+    # Step 8: Create a new versioned connection for city floodplains
+    edit_connect = db.create_versioned_connection(
+        config.version_params, config.db_params)
+
 # Step 6b: Make edits to the version
 # Step 6c: Cut existing floodplains with LOMR boundaries
 # Step 6d: Make existing floodplains inside LOMR bounds "Inactive"
