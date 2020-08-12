@@ -78,7 +78,7 @@ def transform(sfha_sdf, lomr_fs):
     log.info("Calculating INEFFDATE.")
     dups = list(sfha_sdf[sfha_sdf.duplicated(["FLD_AR_ID"])]["FLD_AR_ID"])
     dup_dates = {i: sorted(
-        list(sfha_sdf[sfha_sdf["FLD_AR_ID"] == i]["EFF_DATE"])) for i in dups}
+        list(sfha_sdf[sfha_sdf["FLD_AR_ID"] == i]["ADOPTDATE"])) for i in dups}
     sfha_sdf["INEFFDATE"] = sfha_sdf.apply(
         api.calc_ineffdate, date_dict=dup_dates, axis=1)
 
