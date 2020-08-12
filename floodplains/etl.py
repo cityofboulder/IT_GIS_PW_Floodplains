@@ -1,6 +1,7 @@
 import floodplains.config as config
 import floodplains.utils.esriapi as api
 import floodplains.utils.managedb as db
+
 import arcgis
 
 
@@ -70,16 +71,26 @@ def transform(sfha_sdf, lomr_fs):
     # Step 6: Calculate all fields
     log.info("Calculating DRAINAGE.")
     api.calc_drainages(sfha_sdf, compare, sr)
+
     log.info("Calculating ADOPTDATE.")
     sfha_sdf = api.calc_adoptdate(sfha_sdf, lomr_fs)
+
+    log.info("Calculating INEFFDATE.")
+    dups = list(sfha_sdf[sfha_sdf.duplicated(["FLD_AR_ID"])]["FLD_AR_ID"])
+    dup_dates = {i: sorted(
+        list(sfha_sdf[sfha_sdf["FLD_AR_ID"] == i]["EFF_DATE"])) for i in dups}
+    sfha_sdf["INEFFDATE"] = sfha_sdf.apply(
+        api.calc_ineffdate, date_dict=dup_dates, axis=1)
+
     log.info("Calculating FLOODPLAIN.")
     sfha_sdf["FLOODPLAIN"] = sfha_sdf.apply(api.calc_floodplain, axis=1)
+
     log.info("Calculating FEMAZONE.")
     sfha_sdf["FEMAZONE"] = sfha_sdf.apply(api.calc_femazone, axis=1)
-    log.info("Calculating INEFFDATE.")
-    sfha_sdf["INEFFDATE"] = None
+
     log.info("Calculating LIFECYCLE.")
     sfha_sdf["LIFECYCLE"] = "Active"
+
     log.info("Calculating SOURCE.")
     sfha_sdf["SOURCE"] = "FEMA"
 
