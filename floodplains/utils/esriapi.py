@@ -159,9 +159,6 @@ def calc_adoptdate(sfha, lomr):
     """Calculates the date a given SFHA was adopted based on the LOMR
     boundary in which it resides.
 
-    If an SFHA resides in two LOMR boundaries at once, it will be
-    assigned the ADOPTDATE of which LOMR area is most recent.
-
     Parameters
     ----------
     sfha : ESRI Spatial Dataframe
@@ -180,14 +177,48 @@ def calc_adoptdate(sfha, lomr):
     # Spatial join of LOMRs and SFHAs
     if not isinstance(sfha, pd.DataFrame):
         sfha = sfha.sdf
-    new_sdf = sfha.spatial.join(lomr.sdf)
-    # Sort by effective date, most recent first
-    new_sdf.sort_values(by=['EFF_DATE'], inplace=True, ascending=False)
-    # Remove duplicate FLD_AR_IDs, keep the first dup record encountered.
-    new_sdf.drop_duplicates(subset=['FLD_AR_ID'], inplace=True, keep='first')
+    if not isinstance(lomr, pd.DataFrame):
+        lomr = lomr.sdf
+    new_sdf = sfha.spatial.join(lomr)
+
     new_sdf.rename(columns={"EFF_DATE": "ADOPTDATE"}, inplace=True)
     # Return new spatial dataframe
     return new_sdf
+
+
+def calc_ineffdate(row, date_dict: dict):
+    """Calculates the date a given SFHA was deemed ineffective based on
+    whether the SFHA resides inside 2+ different LOMRs.
+
+    Parameters
+    ----------
+    row : Pandas Series
+        A row of a pandas DataFrame
+
+    date_dict : dict
+        A dictionary of FLD_AR_IDs and all the LOMR EFF_DATEs associated
+        with each. The EFF_DATEs should be ordered chronologically.
+
+    Returns
+    -------
+    pandas.Timestamp
+        The timestamp a polygon went ineffective, or None
+    """
+    fema_id = row["FLD_AR_ID"]
+    adopt_date = row["EFF_DATE"]
+    ineff_date = None
+    try:
+        idx = date_dict[fema_id].index(adopt_date)
+        try:
+            ineff_date = date_dict[fema_id][idx+1]
+        except IndexError:
+            # The polygon has the most recent ADOPTDATE of all the LOMRs that
+            # touch the polygon, and therefore doesn't have an INEFFDATE
+            pass
+    except KeyError:
+        # The polygon was not duplicated
+        pass
+    return ineff_date
 
 
 def calc_floodplain(row):
