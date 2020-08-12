@@ -89,7 +89,8 @@ def transform(sfha_sdf, lomr_fs):
     sfha_sdf["FEMAZONE"] = sfha_sdf.apply(api.calc_femazone, axis=1)
 
     log.info("Calculating LIFECYCLE.")
-    sfha_sdf["LIFECYCLE"] = "Active"
+    sfha_sdf.loc[sfha_sdf["INEFFDATE"].notnull(), "LIFECYCLE"] = "Inactive"
+    sfha_sdf.loc[sfha_sdf["INEFFDATE"].isnull(), "LIFECYCLE"] = "Active"
 
     log.info("Calculating SOURCE.")
     sfha_sdf["SOURCE"] = "FEMA"
