@@ -2,12 +2,15 @@ import floodplains.etl as etl
 import floodplains.config as config
 import floodplains.utils.email as email
 from floodplains.utils.managedisk import list_files
+from floodplains.utils.managedb import remove_version
 
 # Initiate a logger for __main__
 log = config.logging.getLogger(__name__)
 
 if __name__ == "__main__":
     try:
+        log.info("Removing old edit version.")
+        remove_version(config.edit_conn, config.version_name)
         log.info("Initiating extraction.")
         new_sfhas, new_lomrs = etl.extract()
         if new_sfhas is not None:
