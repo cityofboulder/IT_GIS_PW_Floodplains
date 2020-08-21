@@ -104,7 +104,16 @@ def transform(sfha_sdf, lomr_fs):
     return sfha_sdf
 
 
-def load():
+def load(sfha_sdf, lomr_fs):
+    """Loads the transformed SFHAs into the city's dataset.
+
+    Parameters
+    ----------
+    sfha_sdf : Pandas DataFrame
+        Transformed special flood hazard areas
+    lomr_fs : arcgis.features.FeatureSet
+        Boulder's LOMR areas
+    """
     # Step 8: Create a new versioned connection for city floodplains
     edit_connect = db.create_versioned_connection(
         config.version_params, config.db_params)
