@@ -54,6 +54,9 @@ aprx_location = os.path.join(esri_folder, esri["aprx_name"])
 # Data properties
 urls = config["DATA"]["urls"]
 sde = config["DATA"]["sde"]
+sr = sde["feature"]["spatialref"]
+fc_name = sde["feature"]["name"]
+fc_fields = sde["feature"]["fields"]
 
 # Database properties
 database = config["DATABASE"]

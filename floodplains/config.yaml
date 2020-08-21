@@ -17,7 +17,17 @@ DATA:
     city_flood: "https://maps.bouldercolorado.gov/arcgis3/rest/services/util/Floodplain/MapServer/3"
   sde:
     spatialref: 2876 # NAD83(HARN) / Colorado North (ftUS)
-    feature: "GISPROD3.UTIL.Floodplain"
+    feature: 
+      name: "GISPROD3.UTIL.Floodplain"
+      fields:
+        - "FLOODPLAIN"
+        - "FEMAZONE"
+        - "DRAINAGE"
+        - "LIFECYCLE"
+        - "ADOPTDATE"
+        - "INEFFDATE"
+        - "SOURCE"
+        - "SHAPE"
 
 # Email recipients
 EMAIL:
