@@ -98,9 +98,7 @@ def transform(sfha_sdf, lomr_fs):
     # Step 7: Drop all non-essential fields and rows
     sfha_sdf = sfha_sdf[sfha_sdf["ZONE_SUBTY"]
                         != "AREA OF MINIMAL FLOOD HAZARD"]
-    sfha_sdf = sfha_sdf[["FLOODPLAIN", "DRAINAGE", "FEMAZONE",
-                         "LIFECYCLE", "ADOPTDATE", "INEFFDATE", "SOURCE",
-                         "SHAPE"]]
+    sfha_sdf = sfha_sdf[config.fc_fields]
     return sfha_sdf
 
 
