@@ -6,9 +6,46 @@ import floodplains.config as config
 log = config.logging.getLogger(__name__)
 
 
-def _cut_polys():
-    # Cuts the city flood polygons
-    pass
+def _cut_polys(fc, fields, where_clause, boundary, cursor):
+    """Cuts polygons inside the feature class that cross the supplied
+    geometry boundary.
+
+    Parameters
+    ----------
+    fc : str
+        The full path to the feature class
+    fields : list
+        The fields to include in the update cursor
+    where_clause : str
+        A SQL statement used to filter the contents of the database
+        cursor
+    boundary : arcpy.Geometry()
+        The geometry boundary used to cut polygons in the feature class
+    cursor : arcpy.da.InsertCursor
+        The insert cursor used to insert new geometries to the feature
+        class
+    """
+    # Enumerate fields to make cursor access easier to understand
+    i = {field: index for index, field in fields}
+    with arcpy.da.UpdateCursor(fc, fields, where_clause) as update:
+        for row in update:
+            if row[i["SHAPE"]].overlaps(boundary):
+                # save all attributes (other than geometry) before cutting
+                row_dict = {index: value for index, value in enumerate(row)}
+                # save a list of clipped floodplain geometries
+                geoms = row[i["SHAPE"]].cut(boundary)
+                # delete the geometry that got cut to avoid duplicates
+                update.deleteRow()
+                for g in geoms:
+                    if g.area > 0:
+                        # create a new row dict
+                        new_record = row_dict
+                        # insert the new geometry
+                        new_record[i["SHAPE"]] = g
+                        # convert back to a list in the proper order
+                        new_row = tuple(new_record.values())
+                        # add the new row to the layer
+                        cursor.insertRow(new_row)
 
 
 def _inactivate_polys():
@@ -35,7 +72,7 @@ def perform_edits(workspace: str, fc: str, fields: str, where_clause: str):
         session.startEditing(False, True)
         session.startOperation()
 
-        # open an insert cursor for edits
+        # Open an insert cursor for edits
         insert = arcpy.da.InsertCursor(fc_path, fields)
 
         session.stopOperation()
