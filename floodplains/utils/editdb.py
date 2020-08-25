@@ -1,6 +1,8 @@
 import arcpy
 import os
 
+import arcgis
+
 import floodplains.config as config
 
 log = config.logging.getLogger(__name__)
@@ -64,9 +66,14 @@ def _dissolve_polys():
     pass
 
 
-def perform_edits(workspace: str, fc: str, fields: str, where_clause: str):
-    # Make all edits to the city floodplains
+def perform_edits(workspace: str, fc: str, fields: list, where_clause: str,
+                  lomr_layer):
+    # Path to floodplain feature class
     fc_path = os.path.join(workspace, fc)
+    # Deconstruct lomr layer into a linear boundary
+    lomr_geom = arcgis.geometry.Geometry(lomr_layer.geometry).as_arcpy
+    boundary = lomr_geom.boundary()
+
     try:
         session = arcpy.da.Editor(workspace)
         session.startEditing(False, True)
