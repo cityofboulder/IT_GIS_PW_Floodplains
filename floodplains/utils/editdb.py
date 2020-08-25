@@ -82,6 +82,10 @@ def perform_edits(workspace: str, fc: str, fields: list, where_clause: str,
         # Open an insert cursor for edits
         insert = arcpy.da.InsertCursor(fc_path, fields)
 
+        # Cut polygons in the feature class
+        _cut_polys(fc=fc_path, fields=fields, where_clause=where_clause,
+                   boundary=boundary, cursor=insert)
+
         session.stopOperation()
         session.stopEditing(True)
         del session, insert
