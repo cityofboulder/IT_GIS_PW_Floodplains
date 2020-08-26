@@ -127,10 +127,6 @@ def load(sfha_sdf, lomr_fs):
                            lomr_layer=lomr,
                            sfha_sdf=sfha_sdf)
 
-# Step 6b: Make edits to the version
-# Step 6c: Cut existing floodplains with LOMR boundaries
-# Step 6d: Make existing floodplains inside LOMR bounds "Inactive"
-# Step 6e: Add the transformed sfhas into the version
 
 # NOTIFY
 # Step 7a: Notify steward of new version edits
