@@ -126,9 +126,8 @@ def _add_new_polys(sfha_sdf, fields, cursor):
         return records
 
     new_records = sdf_to_dict(sfha_sdf)
-    ordered_fields = {index: value for index, value in enumerate(fields)}
     for record in new_records:
-        row = [record[column_name] for column_name in ordered_fields.values()]
+        row = [record[column_name] for column_name in fields]
         cursor.insertRow(row)
 
 
