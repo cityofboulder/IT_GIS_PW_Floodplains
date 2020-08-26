@@ -138,7 +138,7 @@ def _dissolve_polys():
 
 
 def perform_edits(workspace: str, fc: str, fields: list, where_clause: str,
-                  lomr_layer):
+                  lomr_layer, sfha_sdf):
     # Path to floodplain feature class
     fc_path = os.path.join(workspace, fc)
     # LOMR effective date
@@ -162,6 +162,9 @@ def perform_edits(workspace: str, fc: str, fields: list, where_clause: str,
         # Inactivate the current floodplain polygons
         _inactivate_polys(fc=fc_path, fields=fields, where_clause=where_clause,
                           polygon=lomr_geom, date=lomr_date)
+
+        # Add the transformed polygons
+        _add_new_polys(sfha_sdf=sfha_sdf, fields=fields, cursor=insert)
 
         session.stopOperation()
         session.stopEditing(True)
