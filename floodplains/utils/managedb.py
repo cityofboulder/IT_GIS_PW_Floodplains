@@ -72,11 +72,15 @@ def remove_version(connection: str, version: str) -> None:
     version : str
         Name of the version being deleted (without the owner prepended)
     """
-    del_version = [v for v in arcpy.da.ListVersions(
-        connection) if version.lower() in v.name.lower()][0]
-    if del_version.isOwner:
-        log.info("Removing old edit version.")
-        arcpy.DeleteVersion_management(connection, del_version.name)
-    else:
-        log.warning(("The version could not be deleted through the connection "
-                     "provided because it does not own the version."))
+    try:
+        del_version = [v for v in arcpy.da.ListVersions(
+            connection) if version.lower() in v.name.lower()][0]
+        if del_version.isOwner:
+            log.info("Removing old edit version.")
+            arcpy.DeleteVersion_management(connection, del_version.name)
+        else:
+            log.warning(("The version could not be deleted through the "
+                         "connection provided because it does not own the "
+                         "version."))
+    except IndexError:
+        log.info(f"No edit version called {version} currently exists.")
