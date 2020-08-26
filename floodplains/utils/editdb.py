@@ -94,6 +94,8 @@ def perform_edits(workspace: str, fc: str, fields: list, where_clause: str,
                   lomr_layer):
     # Path to floodplain feature class
     fc_path = os.path.join(workspace, fc)
+    # LOMR effective date
+    lomr_date = lomr_layer.attributes["EFF_DATE"]
     # Deconstruct lomr layer into a linear boundary
     lomr_geom = arcgis.geometry.Geometry(lomr_layer.geometry).as_arcpy
     boundary = lomr_geom.boundary()
