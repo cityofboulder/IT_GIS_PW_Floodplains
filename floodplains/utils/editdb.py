@@ -112,6 +112,10 @@ def perform_edits(workspace: str, fc: str, fields: list, where_clause: str,
         _cut_polys(fc=fc_path, fields=fields, where_clause=where_clause,
                    boundary=boundary, cursor=insert)
 
+        # Inactivate the current floodplain polygons
+        _inactivate_polys(fc=fc_path, fields=fields, where_clause=where_clause,
+                          polygon=lomr_geom, date=lomr_date)
+
         session.stopOperation()
         session.stopEditing(True)
         del session, insert
