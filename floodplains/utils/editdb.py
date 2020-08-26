@@ -1,7 +1,8 @@
 import arcpy
 import os
-
 import arcgis
+
+import pandas as pd
 
 import floodplains.config as config
 
@@ -65,7 +66,7 @@ def _inactivate_polys(fc, fields, where_clause, polygon, date):
         cursor
     polygon : arcpy.Polygon()
         The polygon of the lomr being investigated
-    date : int
+    date : datetime
         The effective date of the lomr
     """
     # Enumerate fields to make cursor access easier to understand
@@ -79,9 +80,56 @@ def _inactivate_polys(fc, fields, where_clause, polygon, date):
                 update.updateRow(row)
 
 
-def _add_new_polys():
-    # Add new transformed polygons from FEMA
-    pass
+def _add_new_polys(sfha_sdf, fields, cursor):
+    """Inserts newly transformed records into the cursor opened on
+    a feature class.
+
+    Parameters
+    ----------
+    sfha_sdf : pandas.DataFrame
+        The pandas DataFrame contained transformed SFHA delineations
+        from FEMA
+    fields : list
+        The list of field names ordered based on how they appear in the
+        cursor object
+    cursor : arcpy.da.InsertCursor
+        An insert cursor opened on the versioned feature class being
+        edited
+    """
+    def sdf_to_dict(sdf):
+        """Transform the spatial dataframe coming from the esri api into
+        a list of dicts that can be easily consumed into an update cursor.
+
+        Parameters
+        ----------
+        sdf : pandas.DataFrame
+            The spatial dataframe of new flood areas
+
+        Returns
+        -------
+        list
+            A list of dicts, where every dict is one row of the dataframe
+        """
+        records = sfha_sdf.to_dict("records")
+        for record in records:
+            # Convert timestamps to datetime
+            if pd.notnull(record["ADOPTDATE"]):
+                record["ADOPTDATE"] = record["ADOPTDATE"].to_pydatetime()
+            else:
+                record["ADOPTDATE"] = None
+            if pd.notnull(record["INEFFDATE"]):
+                record["INEFFDATE"] = record["INEFFDATE"].to_pydatetime()
+            else:
+                record["INEFFDATE"] = None
+            # Convert geometry to arcpy
+            record["SHAPE"] = record["SHAPE"].as_arcpy
+        return records
+
+    new_records = sdf_to_dict(sfha_sdf)
+    ordered_fields = {index: value for index, value in enumerate(fields)}
+    for record in new_records:
+        row = [record[column_name] for column_name in ordered_fields.values()]
+        cursor.insertRow(row)
 
 
 def _dissolve_polys():
