@@ -50,9 +50,33 @@ def _cut_polys(fc, fields, where_clause, boundary, cursor):
                         cursor.insertRow(new_row)
 
 
-def _inactivate_polys():
-    # Make all existing polys inside the LOMR boundaries 'Inactive'
-    pass
+def _inactivate_polys(fc, fields, where_clause, polygon, date):
+    """Inactivate all polygons that are being replaced, and make the
+    ineffective date the same as the LOMR's effective date.
+
+    Parameters
+    ----------
+    fc : str
+        The full path to the feature class
+    fields : list
+        The fields to include in the update cursor
+    where_clause : str
+        A SQL statement used to filter the contents of the database
+        cursor
+    polygon : arcpy.Polygon()
+        The polygon of the lomr being investigated
+    date : int
+        The effective date of the lomr
+    """
+    # Enumerate fields to make cursor access easier to understand
+    i = {field: index for index, field in fields}
+    with arcpy.da.UpdateCursor(fc, fields, where_clause) as update:
+        for row in update:
+            point = row[i["SHAPE"]].labelPoint
+            if polygon.contains(point):
+                row[i["LIFECYCLE"]] = "Inactive"
+                row[i["INEFFDATE"]] = date
+                update.updateRow(row)
 
 
 def _add_new_polys():
