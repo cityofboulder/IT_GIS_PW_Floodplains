@@ -139,6 +139,34 @@ def _dissolve_polys():
 
 def perform_edits(workspace: str, fc: str, fields: list, where_clause: str,
                   lomr_layer, sfha_sdf):
+    """Makes all the versioned edits necessary to insert new polygons
+    into the floodplain feature class inside city databases.
+
+    1: Cuts polygons that cross the lomr. This ensures that
+    when new FEMA polygons are dropped in, they don't overlap with
+    existing geometries. This also ensures that polygons tie in properly
+    at confluences.
+
+    2: Changes the LIFECYCLE of existing floodplains within the LOMR
+    to "Inactive", and alters the INEFFDATE to match that of the LOMR
+
+    3: Inserts new FEMA geometries with associated attributes
+
+    Parameters
+    ----------
+    workspace : str
+        The file path to the sde connection
+    fc : str
+        The name of the feature class
+    fields : list
+        The fields used in various update and insert cursors
+    where_clause : str
+        A SQL query used to edit specific records in various cursors
+    lomr_layer : arcgis.features.Layer
+        A Layer object representing one LOMR geometry and its attributes
+    sfha_sdf : pandas.DataFrame
+        The spatial dataframe of new flood areas
+    """
     # Path to floodplain feature class
     fc_path = os.path.join(workspace, fc)
     # LOMR effective date
