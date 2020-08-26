@@ -1,5 +1,6 @@
 import floodplains.config as config
 import floodplains.utils.esriapi as api
+import floodplains.utils.editdb as edit
 import floodplains.utils.managedb as db
 
 import arcgis
@@ -112,6 +113,19 @@ def load(sfha_sdf, lomr_fs):
     # Step 8: Create a new versioned connection for city floodplains
     edit_connect = db.create_versioned_connection(
         config.version_params, config.db_params)
+
+    # Step 9: For every lomr, perform edits to city floodplains
+    where = ("LIFECYCLE = 'Active' AND FLOODPLAIN IN "
+             "('500 Year', '100 Year', 'Conveyance Zone')")
+    for lomr in lomr_fs.features:
+        lomr_id = lomr.attributes["CASE_NO"]
+        log.info(f"Making edits for {lomr_id}.")
+        edit.perform_edits(workspace=edit_connect,
+                           fc=config.fc_name,
+                           fields=config.fc_fields,
+                           where_clause=where,
+                           lomr_layer=lomr,
+                           sfha_sdf=sfha_sdf)
 
 # Step 6b: Make edits to the version
 # Step 6c: Cut existing floodplains with LOMR boundaries
