@@ -2,6 +2,7 @@ import floodplains.config as config
 
 import arcgis
 import pandas as pd
+import numpy as np
 
 # Initialize log for esriapicalls
 log = config.logging.getLogger(__name__)
@@ -390,3 +391,57 @@ def calc_drainages(to_calc, comparison, spatial_ref: int):
 
     # Calculate all drainages
     to_calc["DRAINAGE"] = to_calc.apply(check_within, axis=1)
+
+
+def dissolve_sdf(df, fields):
+    """Dissolves geometries in a spatial dataframe based on the supplied
+    fields.
+
+    Parameters
+    ----------
+    df : pd.DataFrame
+        A spatially enabled esri dataframe (contains a SHAPE field that
+        consists of arcgis.geometry.Geometry objects)
+    fields : list
+        The list of fields to group by in the dissolve
+    """
+    def dissolve_shapes(row, sr):
+        """Helper function that dissolves a list of arcgis Geometry
+        objects in an DataFrame apply function.
+
+        Parameters
+        ----------
+        row : pd.Series
+            A pandas Series representing a row of a dataframe
+
+        Returns
+        -------
+        arcgis.geometry.Geometry
+            An arcgis geometry object
+        """
+        # Set up a temporary GIS object
+        tmp = arcgis.gis.GIS()
+        # Dissolve the geoms
+        geom = arcgis.geometry.functions.union(
+            geometries=row.SHAPE, spatial_ref=sr, gis=tmp)
+        return geom
+
+    # Temporarily fill n/a values so that grouping can happen even when
+    # a field has an undetermined value
+    na = df.fillna("NONE")
+
+    # Group the fields
+    grouped = na.groupby(fields)
+
+    # For rows that get grouped by the fields provided, create a list of
+    # their geometries
+    listed_geoms = grouped.SHAPE.apply(list)
+    listed_geoms = listed_geoms.reset_index()
+
+    # Re-enable n/a values in the df
+    dissolved = listed_geoms.replace("NONE", np.NaN)
+
+    # Dissolve the shapes based on field groupings
+    dissolved.SHAPE = dissolved.apply(dissolve_shapes, sr=2876, axis=1)
+
+    return dissolved
