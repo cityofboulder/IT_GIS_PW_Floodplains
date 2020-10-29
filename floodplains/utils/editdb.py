@@ -131,12 +131,6 @@ def _add_new_polys(sfha_sdf, fields, cursor):
         cursor.insertRow(row)
 
 
-def _dissolve_polys():
-    # Dissolve polygons inside the new LOMR by DRAINAGE, FEMAZONE, FLOODPLAIN,
-    # and LIFECYCLE
-    pass
-
-
 def perform_edits(workspace: str, fc: str, fields: list, where_clause: str,
                   lomr_layer, sfha_sdf):
     """Makes all the versioned edits necessary to insert new polygons
