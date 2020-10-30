@@ -427,8 +427,8 @@ def dissolve_sdf(df, fields):
         return geom
 
     # Temporarily fill n/a values so that grouping can happen even when
-    # a field has an undetermined value
-    na = df.fillna("NONE")
+    # a field has an undetermined value. Exclude SHAPE field.
+    na = df.fillna({field: "NONE" for field in fields})
 
     # Group the fields
     grouped = na.groupby(fields)
