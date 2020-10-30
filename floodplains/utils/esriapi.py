@@ -393,7 +393,7 @@ def calc_drainages(to_calc, comparison, spatial_ref: int):
     to_calc["DRAINAGE"] = to_calc.apply(check_within, axis=1)
 
 
-def dissolve_sdf(df, fields):
+def dissolve_sdf(df, by=None):
     """Dissolves geometries in a spatial dataframe based on the supplied
     fields.
 
@@ -402,8 +402,8 @@ def dissolve_sdf(df, fields):
     df : pd.DataFrame
         A spatially enabled esri dataframe (contains a SHAPE field that
         consists of arcgis.geometry.Geometry objects)
-    fields : list
-        The list of fields to group by in the dissolve
+    by : list, optional
+        The list of fields to group by in the dissolve, default None
     """
     def dissolve_shapes(row, sr):
         """Helper function that dissolves a list of arcgis Geometry
@@ -426,20 +426,25 @@ def dissolve_sdf(df, fields):
             geometries=row.SHAPE, spatial_ref=sr, gis=tmp)
         return geom
 
-    # Temporarily fill n/a values so that grouping can happen even when
-    # a field has an undetermined value. Exclude SHAPE field.
-    na = df.fillna({field: "NONE" for field in fields})
+    if by:
+        # Temporarily fill n/a values so that grouping can happen even when
+        # a field has an undetermined value. Exclude SHAPE field.
+        na = df.fillna({field: "NONE" for field in by})
 
-    # Group the fields
-    grouped = na.groupby(fields)
+        # Group by the supplied fields
+        grouped = na.groupby(by)
 
-    # For rows that get grouped by the fields provided, create a list of
-    # their geometries
-    listed_geoms = grouped.SHAPE.apply(list)
-    listed_geoms = listed_geoms.reset_index()
+        # For rows that get grouped, create a list of their geometries
+        listed_geoms = grouped.SHAPE.apply(list)
+        listed_geoms = listed_geoms.reset_index()
 
-    # Re-enable n/a values in the df
-    dissolved = listed_geoms.replace("NONE", np.NaN)
+        # Re-enable n/a values in the df
+        dissolved = listed_geoms.replace("NONE", np.NaN)
+    else:
+        # Condense all geometries to a list
+        geoms = [df.SHAPE.to_list()]
+        # Create a new df of those listed shapes
+        dissolved = pd.DataFrame([geoms], columns=["SHAPE"])
 
     # Dissolve the shapes based on field groupings
     dissolved.SHAPE = dissolved.apply(dissolve_shapes, sr=2876, axis=1)
