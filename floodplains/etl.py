@@ -94,10 +94,17 @@ def transform(sfha_sdf, lomr_fs):
     sfha_sdf["SOURCE"] = "FEMA"
 
     # Step 7: Drop all non-essential fields and rows
+    log.info("Dissolving SHAPE.")
     sfha_sdf = sfha_sdf[sfha_sdf["ZONE_SUBTY"]
                         != "AREA OF MINIMAL FLOOD HAZARD"]
     sfha_sdf = sfha_sdf[config.fc_fields]
-    return sfha_sdf
+
+    # Step 8: Dissolve the polygons based on the fields in the PROD3 fc
+    # Do not include SHAPE field because it's implicitly used in the
+    # dissolve function
+    dissolved = api.dissolve_sdf(sfha_sdf, config.fc_fields[:-1])
+
+    return dissolved
 
 
 def load(sfha_sdf, lomr_fs):
