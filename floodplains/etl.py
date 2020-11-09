@@ -32,8 +32,7 @@ def extract():
 
     # Step 3: Extract LOMRs based on spatial filters and SQL query
     log.info("Querying the LOMR feature service.")
-    date_str = '2018-08-16'  # <- will change based on SDE
-    where = f"STATUS = 'Effective' AND EFF_DATE > '{date_str}'"
+    where = f"STATUS = 'Effective' AND EFF_DATE > '{config.last_date}'"
     boulder_lomrs = api.query_lomr(lomr, where, geom_filter, config.sr)
 
     # Step 4: If there are "more than zero" new LOMRs, continue ETL process
