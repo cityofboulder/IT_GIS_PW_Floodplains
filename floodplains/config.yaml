@@ -11,6 +11,7 @@ VERSIONING:
 
 # Data paths
 DATA:
+  last_checked_date: "2018-08-16"
   urls:
     city: "https://maps.bouldercolorado.gov/arcgis/rest/services/plan/CityLimits/MapServer/0"
     nfhl: "https://hazards.fema.gov/gis/nfhl/rest/services/public/NFHL/MapServer"
