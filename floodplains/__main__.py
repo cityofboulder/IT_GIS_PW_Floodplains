@@ -22,9 +22,8 @@ if __name__ == "__main__":
             if new_sfhas is not None:
                 log.info("Initiating transformation.")
                 transformed = etl.transform(new_sfhas, new_lomrs)
-                # log.info("Initiating load.")
-                # etl.load()
-                pass
+                log.info("Initiating load.")
+                etl.load(transformed, new_lomrs)
             else:
                 log.info("No changes were made in Boulder.")
                 body = email.email_body("No changes were made in Boulder.")
