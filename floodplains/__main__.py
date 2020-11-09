@@ -13,7 +13,7 @@ if __name__ == "__main__":
     try:
         log.info("Testing REST Endpoints.")
         offline = list(filter(lambda u: requests.get(
-            u, {"f": "pjson"}).status_code != 200, config.urls))
+            u, {"f": "pjson"}).status_code != 200, list(config.urls.values())))
         if not offline:
             log.info("Removing old edit version.")
             remove_version(config.edit_conn, config.version_name)
