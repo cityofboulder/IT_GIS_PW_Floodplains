@@ -29,7 +29,7 @@ def _cut_polys(fc, fields, where_clause, boundary, cursor):
         class
     """
     # Enumerate fields to make cursor access easier to understand
-    i = {field: index for index, field in fields}
+    i = {field: index for index, field in enumerate(fields)}
     with arcpy.da.UpdateCursor(fc, fields, where_clause) as update:
         for row in update:
             if row[i["SHAPE"]].overlaps(boundary):
@@ -70,7 +70,7 @@ def _inactivate_polys(fc, fields, where_clause, polygon, date):
         The effective date of the lomr
     """
     # Enumerate fields to make cursor access easier to understand
-    i = {field: index for index, field in fields}
+    i = {field: index for index, field in enumerate(fields)}
     with arcpy.da.UpdateCursor(fc, fields, where_clause) as update:
         for row in update:
             point = row[i["SHAPE"]].labelPoint
@@ -171,27 +171,31 @@ def perform_edits(workspace: str, fc: str, fields: list, where_clause: str,
     lomr_geom = arcgis.geometry.Geometry(lomr_layer.geometry).as_arcpy
     boundary = lomr_geom.boundary()
 
-    try:
-        session = arcpy.da.Editor(workspace)
-        session.startEditing(False, True)
-        session.startOperation()
+    # try:
+    session = arcpy.da.Editor(workspace)
+    session.startEditing(False, True)
+    session.startOperation()
 
-        # Open an insert cursor for edits
-        insert = arcpy.da.InsertCursor(fc_path, fields)
+    # Open an insert cursor for edits
+    log.info("Creating Insert cursor.")
+    insert = arcpy.da.InsertCursor(fc_path, fields)
 
-        # Cut polygons in the feature class
-        _cut_polys(fc=fc_path, fields=fields, where_clause=where_clause,
-                   boundary=boundary, cursor=insert)
+    # Cut polygons in the feature class
+    log.info("Cutting polys by LOMR boundary.")
+    _cut_polys(fc=fc_path, fields=fields, where_clause=where_clause,
+               boundary=boundary, cursor=insert)
 
-        # Inactivate the current floodplain polygons
-        _inactivate_polys(fc=fc_path, fields=fields, where_clause=where_clause,
-                          polygon=lomr_geom, date=lomr_date)
+    # Inactivate the current floodplain polygons
+    log.info("Inactivating old polygons.")
+    _inactivate_polys(fc=fc_path, fields=fields, where_clause=where_clause,
+                      polygon=lomr_geom, date=lomr_date)
 
-        # Add the transformed polygons
-        _add_new_polys(sfha_sdf=sfha_sdf, fields=fields, cursor=insert)
+    # Add the transformed polygons
+    log.info("Adding new polys.")
+    _add_new_polys(sfha_sdf=sfha_sdf, fields=fields, cursor=insert)
 
-        session.stopOperation()
-        session.stopEditing(True)
-        del session, insert
-    except Exception:
-        log.error("The edit operation failed.")
+    session.stopOperation()
+    session.stopEditing(True)
+    del session, insert
+    # except Exception:
+    #     log.error("The edit operation failed.")
