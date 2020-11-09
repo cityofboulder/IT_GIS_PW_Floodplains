@@ -1,10 +1,9 @@
-import arcpy
 import os
+
 import arcgis
-
-import pandas as pd
-
+import arcpy
 import floodplains.config as config
+import pandas as pd
 
 log = config.logging.getLogger(__name__)
 

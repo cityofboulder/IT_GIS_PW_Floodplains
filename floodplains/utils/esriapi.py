@@ -1,8 +1,7 @@
-import floodplains.config as config
-
 import arcgis
-import pandas as pd
+import floodplains.config as config
 import numpy as np
+import pandas as pd
 
 # Initialize log for esriapicalls
 log = config.logging.getLogger(__name__)

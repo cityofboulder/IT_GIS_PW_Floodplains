@@ -1,8 +1,8 @@
-import floodplains.etl as etl
 import floodplains.config as config
+import floodplains.etl as etl
 import floodplains.utils.email as email
-from floodplains.utils.managedisk import list_files
 from floodplains.utils.managedb import remove_version
+from floodplains.utils.managedisk import list_files
 
 # Initiate a logger for __main__
 log = config.logging.getLogger(__name__)

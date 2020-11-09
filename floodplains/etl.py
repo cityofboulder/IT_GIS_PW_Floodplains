@@ -1,10 +1,9 @@
-import floodplains.config as config
-import floodplains.utils.esriapi as api
-import floodplains.utils.editdb as edit
-import floodplains.utils.managedb as db
-
 import arcgis
 
+import floodplains.config as config
+import floodplains.utils.editdb as edit
+import floodplains.utils.esriapi as api
+import floodplains.utils.managedb as db
 
 # Initiate a logger for etl
 log = config.logging.getLogger(__name__)

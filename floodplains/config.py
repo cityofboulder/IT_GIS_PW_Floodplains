@@ -1,11 +1,10 @@
-import os
 import getpass
 import logging
 import logging.config
 import logging.handlers
+import os
 
 import yaml
-
 from cryptography.fernet import Fernet
 
 
