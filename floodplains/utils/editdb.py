@@ -1,4 +1,5 @@
 import os
+from datetime import datetime
 
 import arcgis
 import arcpy
@@ -113,11 +114,13 @@ def _add_new_polys(sfha_sdf, fields, cursor):
         for record in records:
             # Convert timestamps to datetime
             if pd.notnull(record["ADOPTDATE"]):
-                record["ADOPTDATE"] = record["ADOPTDATE"].to_pydatetime()
+                record["ADOPTDATE"] = datetime.fromtimestamp(
+                    record["ADOPTDATE"]/1000)
             else:
                 record["ADOPTDATE"] = None
             if pd.notnull(record["INEFFDATE"]):
-                record["INEFFDATE"] = record["INEFFDATE"].to_pydatetime()
+                record["INEFFDATE"] = datetime.fromtimestamp(
+                    record["INEFFDATE"]/1000)
             else:
                 record["INEFFDATE"] = None
             # Convert geometry to arcpy
@@ -163,7 +166,7 @@ def perform_edits(workspace: str, fc: str, fields: list, where_clause: str,
     # Path to floodplain feature class
     fc_path = os.path.join(workspace, fc)
     # LOMR effective date
-    lomr_date = lomr_layer.attributes["EFF_DATE"].to_pydatetime()
+    lomr_date = datetime.fromtimestamp(lomr_layer.attributes["EFF_DATE"]/1000)
     # Deconstruct lomr layer into a linear boundary
     lomr_geom = arcgis.geometry.Geometry(lomr_layer.geometry).as_arcpy
     boundary = lomr_geom.boundary()
