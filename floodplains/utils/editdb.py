@@ -80,7 +80,7 @@ def _inactivate_polys(fc, fields, where_clause, polygon, date):
                 update.updateRow(row)
 
 
-def _add_new_polys(sfha_sdf, fields, cursor):
+def _add_new_polys(sfha_sdf, fields, polygon, cursor):
     """Inserts newly transformed records into the cursor opened on
     a feature class.
 
@@ -92,6 +92,8 @@ def _add_new_polys(sfha_sdf, fields, cursor):
     fields : list
         The list of field names ordered based on how they appear in the
         cursor object
+    polygon : arcpy.Polygon()
+        The polygon of the lomr being investigated
     cursor : arcpy.da.InsertCursor
         An insert cursor opened on the versioned feature class being
         edited
@@ -114,13 +116,11 @@ def _add_new_polys(sfha_sdf, fields, cursor):
         for record in records:
             # Convert timestamps to datetime
             if pd.notnull(record["ADOPTDATE"]):
-                record["ADOPTDATE"] = datetime.fromtimestamp(
-                    record["ADOPTDATE"]/1000)
+                record["ADOPTDATE"] = record["ADOPTDATE"].to_pydatetime()
             else:
                 record["ADOPTDATE"] = None
             if pd.notnull(record["INEFFDATE"]):
-                record["INEFFDATE"] = datetime.fromtimestamp(
-                    record["INEFFDATE"]/1000)
+                record["INEFFDATE"] = record["INEFFDATE"].to_pydatetime()
             else:
                 record["INEFFDATE"] = None
             # Convert geometry to arcpy
