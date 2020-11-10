@@ -9,7 +9,7 @@ import pandas as pd
 log = config.logging.getLogger(__name__)
 
 
-def _cut_polys(fc, fields, where_clause, boundary, cursor):
+def _cut_polys(fc, fields, where_clause, polygon, cursor):
     """Cuts polygons inside the feature class that cross the supplied
     geometry boundary.
 
@@ -22,8 +22,8 @@ def _cut_polys(fc, fields, where_clause, boundary, cursor):
     where_clause : str
         A SQL statement used to filter the contents of the database
         cursor
-    boundary : arcpy.Geometry()
-        The geometry boundary used to cut polygons in the feature class
+   polygon : arcpy.Polygon()
+        The polygon of the lomr being investigated
     cursor : arcpy.da.InsertCursor
         The insert cursor used to insert new geometries to the feature
         class
@@ -32,11 +32,11 @@ def _cut_polys(fc, fields, where_clause, boundary, cursor):
     i = {field: index for index, field in enumerate(fields)}
     with arcpy.da.UpdateCursor(fc, fields, where_clause) as update:
         for row in update:
-            if row[i["SHAPE@"]].overlaps(boundary):
+            if row[i["SHAPE@"]].overlaps(polygon):
                 # save all attributes (other than geometry) before cutting
                 row_dict = {index: value for index, value in enumerate(row)}
                 # save a list of clipped floodplain geometries
-                geoms = row[i["SHAPE@"]].cut(boundary)
+                geoms = row[i["SHAPE@"]].cut(polygon.boundary())
                 # delete the geometry that got cut to avoid duplicates
                 update.deleteRow()
                 for g in geoms:
@@ -169,7 +169,6 @@ def perform_edits(workspace: str, fc: str, fields: list, where_clause: str,
     lomr_date = datetime.fromtimestamp(lomr_layer.attributes["EFF_DATE"]/1000)
     # Deconstruct lomr layer into a linear boundary
     lomr_geom = arcgis.geometry.Geometry(lomr_layer.geometry).as_arcpy
-    boundary = lomr_geom.boundary()
 
     # try:
     session = arcpy.da.Editor(workspace)
@@ -183,7 +182,7 @@ def perform_edits(workspace: str, fc: str, fields: list, where_clause: str,
     # Cut polygons in the feature class
     log.info("Cutting polys by LOMR boundary.")
     _cut_polys(fc=fc_path, fields=fields, where_clause=where_clause,
-               boundary=boundary, cursor=insert)
+               polygon=lomr_geom, cursor=insert)
 
     # Inactivate the current floodplain polygons
     log.info("Inactivating old polygons.")
