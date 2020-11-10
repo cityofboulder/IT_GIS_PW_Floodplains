@@ -120,7 +120,10 @@ def load(sfha_sdf, lomr_fs):
     edit_connect = db.create_versioned_connection(
         config.version_params, config.db_params)
 
-    # Step 9: For every lomr, perform edits to city floodplains
+    # Step 9: Convert dataframe to list of dicts for use in cursors
+    records = edit.sdf_to_dict(sfha_sdf)
+
+    # Step 10: For every lomr, perform edits to city floodplains
     where = ("LIFECYCLE = 'Active' AND FLOODPLAIN IN "
              "('500 Year', '100 Year', 'Conveyance Zone')")
     for lomr in lomr_fs.features:
@@ -131,7 +134,7 @@ def load(sfha_sdf, lomr_fs):
                            fields=config.fc_fields,
                            where_clause=where,
                            lomr_layer=lomr,
-                           sfha_sdf=sfha_sdf)
+                           records=records)
 
 
 # NOTIFY
