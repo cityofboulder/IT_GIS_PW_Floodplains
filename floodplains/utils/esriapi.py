@@ -242,11 +242,11 @@ def calc_floodplain(row):
         if row["ZONE_SUBTY"] == 'FLOODWAY':
             floodplain = 'Conveyance Zone'
         else:
-            floodplain = '100-Year'
+            floodplain = '100 Year'
     else:
         if row["ZONE_SUBTY"] in ('0.2 PCT ANNUAL CHANCE FLOOD HAZARD',
                                  'AREA WITH REDUCED FLOOD RISK DUE TO LEVEE'):
-            floodplain = '500-Year'
+            floodplain = '500 Year'
         else:
             floodplain = None
     return floodplain
