@@ -32,11 +32,11 @@ def _cut_polys(fc, fields, where_clause, boundary, cursor):
     i = {field: index for index, field in enumerate(fields)}
     with arcpy.da.UpdateCursor(fc, fields, where_clause) as update:
         for row in update:
-            if row[i["SHAPE"]].overlaps(boundary):
+            if row[i["SHAPE@"]].overlaps(boundary):
                 # save all attributes (other than geometry) before cutting
                 row_dict = {index: value for index, value in enumerate(row)}
                 # save a list of clipped floodplain geometries
-                geoms = row[i["SHAPE"]].cut(boundary)
+                geoms = row[i["SHAPE@"]].cut(boundary)
                 # delete the geometry that got cut to avoid duplicates
                 update.deleteRow()
                 for g in geoms:
@@ -44,7 +44,7 @@ def _cut_polys(fc, fields, where_clause, boundary, cursor):
                         # create a new row dict
                         new_record = row_dict
                         # insert the new geometry
-                        new_record[i["SHAPE"]] = g
+                        new_record[i["SHAPE@"]] = g
                         # convert back to a list in the proper order
                         new_row = tuple(new_record.values())
                         # add the new row to the layer
@@ -73,7 +73,7 @@ def _inactivate_polys(fc, fields, where_clause, polygon, date):
     i = {field: index for index, field in enumerate(fields)}
     with arcpy.da.UpdateCursor(fc, fields, where_clause) as update:
         for row in update:
-            point = row[i["SHAPE"]].labelPoint
+            point = row[i["SHAPE@"]].labelPoint
             if polygon.contains(point):
                 row[i["LIFECYCLE"]] = "Inactive"
                 row[i["INEFFDATE"]] = date
@@ -124,7 +124,7 @@ def _add_new_polys(sfha_sdf, fields, cursor):
             else:
                 record["INEFFDATE"] = None
             # Convert geometry to arcpy
-            record["SHAPE"] = record["SHAPE"].as_arcpy
+            record["SHAPE@"] = record["SHAPE"].as_arcpy
         return records
 
     new_records = sdf_to_dict(sfha_sdf)
