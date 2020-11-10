@@ -9,9 +9,9 @@ import pandas as pd
 log = config.logging.getLogger(__name__)
 
 
-def _cut_polys(fc, fields, where_clause, polygon, cursor):
+def _edit_existing_polys(fc, fields, where_clause, polygon, date, cursor):
     """Cuts polygons inside the feature class that cross the supplied
-    geometry boundary.
+    geometry boundary, and updates attributes of the resulting polygons.
 
     Parameters
     ----------
@@ -22,8 +22,10 @@ def _cut_polys(fc, fields, where_clause, polygon, cursor):
     where_clause : str
         A SQL statement used to filter the contents of the database
         cursor
-   polygon : arcpy.Polygon()
+    polygon : arcpy.Polygon()
         The polygon of the lomr being investigated
+    date : datetime
+        The effective date of the lomr
     cursor : arcpy.da.InsertCursor
         The insert cursor used to insert new geometries to the feature
         class
@@ -45,39 +47,14 @@ def _cut_polys(fc, fields, where_clause, polygon, cursor):
                         new_record = row_dict
                         # insert the new geometry
                         new_record[i["SHAPE@"]] = g
+                        # change LIFECYCLE and INEFFDATE of the inner geom
+                        if polygon.contains(g.centroid):
+                            new_record[i["LIFECYCLE"]] = "Inactive"
+                            new_record[i["INEFFDATE"]] = date
                         # convert back to a list in the proper order
                         new_row = tuple(new_record.values())
                         # add the new row to the layer
                         cursor.insertRow(new_row)
-
-
-def _inactivate_polys(fc, fields, where_clause, polygon, date):
-    """Inactivate all polygons that are being replaced, and make the
-    ineffective date the same as the LOMR's effective date.
-
-    Parameters
-    ----------
-    fc : str
-        The full path to the feature class
-    fields : list
-        The fields to include in the update cursor
-    where_clause : str
-        A SQL statement used to filter the contents of the database
-        cursor
-    polygon : arcpy.Polygon()
-        The polygon of the lomr being investigated
-    date : datetime
-        The effective date of the lomr
-    """
-    # Enumerate fields to make cursor access easier to understand
-    i = {field: index for index, field in enumerate(fields)}
-    with arcpy.da.UpdateCursor(fc, fields, where_clause) as update:
-        for row in update:
-            point = row[i["SHAPE@"]].labelPoint
-            if polygon.contains(point):
-                row[i["LIFECYCLE"]] = "Inactive"
-                row[i["INEFFDATE"]] = date
-                update.updateRow(row)
 
 
 def _add_new_polys(records, fields, polygon, cursor):
@@ -180,18 +157,13 @@ def perform_edits(workspace: str, fc: str, fields: list, where_clause: str,
     log.info("Creating Insert cursor.")
     insert = arcpy.da.InsertCursor(fc_path, fields)
 
-    # Cut polygons in the feature class
-    log.info("Cutting polys by LOMR boundary.")
-    _cut_polys(fc=fc_path, fields=fields, where_clause=where_clause,
-               polygon=lomr_geom, cursor=insert)
-
-    # Inactivate the current floodplain polygons
-    log.info("Inactivating old polygons.")
-    _inactivate_polys(fc=fc_path, fields=fields, where_clause=where_clause,
-                      polygon=lomr_geom, date=lomr_date)
+    # Edit existing polygons in the feature class
+    log.info("Editing existing polygons within the LOMR.")
+    _edit_existing_polys(fc=fc_path, fields=fields, where_clause=where_clause,
+                         polygon=lomr_geom, date=lomr_date, cursor=insert)
 
     # Add the transformed polygons
-    log.info("Adding new polys.")
+    log.info("Adding new polygons into the LOMR area.")
     _add_new_polys(records=records, fields=fields,
                    polygon=lomr_geom, cursor=insert)
 
