@@ -98,7 +98,8 @@ def _add_new_polys(records, fields, polygon, cursor):
         edited
     """
     for record in records:
-        if polygon.contains(record["SHAPE@"].labelPoint):
+        point = record["SHAPE@"].labelPoint
+        if polygon.contains(point):
             row = [record[column_name] for column_name in fields]
             cursor.insertRow(row)
 
