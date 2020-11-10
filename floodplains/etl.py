@@ -93,9 +93,10 @@ def transform(sfha_sdf, lomr_fs):
 
     # Step 7: Drop all non-essential fields and rows
     log.info("Dissolving SHAPE.")
+    essential = ["SHAPE" if f == "SHAPE@" else f for f in config.fc_fields]
     sfha_sdf = sfha_sdf[sfha_sdf["ZONE_SUBTY"]
                         != "AREA OF MINIMAL FLOOD HAZARD"]
-    sfha_sdf = sfha_sdf[config.fc_fields]
+    sfha_sdf = sfha_sdf[essential]
 
     # Step 8: Dissolve the polygons based on the fields in the PROD3 fc
     # Do not include SHAPE field because it's implicitly used in the
