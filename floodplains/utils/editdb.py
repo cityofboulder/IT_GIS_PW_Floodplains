@@ -80,15 +80,14 @@ def _inactivate_polys(fc, fields, where_clause, polygon, date):
                 update.updateRow(row)
 
 
-def _add_new_polys(sfha_sdf, fields, polygon, cursor):
+def _add_new_polys(records, fields, polygon, cursor):
     """Inserts newly transformed records into the cursor opened on
     a feature class.
 
     Parameters
     ----------
-    sfha_sdf : pandas.DataFrame
-        The pandas DataFrame contained transformed SFHA delineations
-        from FEMA
+    records : list
+        A list of dicts, where every dict is one row of the dataframe
     fields : list
         The list of field names ordered based on how they appear in the
         cursor object
@@ -98,43 +97,44 @@ def _add_new_polys(sfha_sdf, fields, polygon, cursor):
         An insert cursor opened on the versioned feature class being
         edited
     """
-    def sdf_to_dict(sdf):
-        """Transform the spatial dataframe coming from the esri api into
-        a list of dicts that can be easily consumed into an update cursor.
+    for record in records:
+        if polygon.contains(record["SHAPE@"].labelPoint):
+            row = [record[column_name] for column_name in fields]
+            cursor.insertRow(row)
 
-        Parameters
-        ----------
-        sdf : pandas.DataFrame
-            The spatial dataframe of new flood areas
 
-        Returns
-        -------
-        list
-            A list of dicts, where every dict is one row of the dataframe
-        """
-        records = sfha_sdf.to_dict("records")
-        for record in records:
-            # Convert timestamps to datetime
-            if pd.notnull(record["ADOPTDATE"]):
-                record["ADOPTDATE"] = record["ADOPTDATE"].to_pydatetime()
-            else:
-                record["ADOPTDATE"] = None
-            if pd.notnull(record["INEFFDATE"]):
-                record["INEFFDATE"] = record["INEFFDATE"].to_pydatetime()
-            else:
-                record["INEFFDATE"] = None
-            # Convert geometry to arcpy
-            record["SHAPE@"] = record["SHAPE"].as_arcpy
-        return records
+def sdf_to_dict(sdf):
+    """Transform the spatial dataframe coming from the esri api into
+    a list of dicts that can be easily consumed into an update cursor.
 
-    new_records = sdf_to_dict(sfha_sdf)
-    for record in new_records:
-        row = [record[column_name] for column_name in fields]
-        cursor.insertRow(row)
+    Parameters
+    ----------
+    sdf : pandas.DataFrame
+        The spatial dataframe of new flood areas
+
+    Returns
+    -------
+    list
+        A list of dicts, where every dict is one row of the dataframe
+    """
+    records = sdf.to_dict("records")
+    for record in records:
+        # Convert timestamps to datetime
+        if pd.notnull(record["ADOPTDATE"]):
+            record["ADOPTDATE"] = record["ADOPTDATE"].to_pydatetime()
+        else:
+            record["ADOPTDATE"] = None
+        if pd.notnull(record["INEFFDATE"]):
+            record["INEFFDATE"] = record["INEFFDATE"].to_pydatetime()
+        else:
+            record["INEFFDATE"] = None
+        # Convert geometry to arcpy
+        record["SHAPE@"] = record["SHAPE"].as_arcpy
+    return records
 
 
 def perform_edits(workspace: str, fc: str, fields: list, where_clause: str,
-                  lomr_layer, sfha_sdf):
+                  lomr_layer, records):
     """Makes all the versioned edits necessary to insert new polygons
     into the floodplain feature class inside city databases.
 
@@ -160,8 +160,8 @@ def perform_edits(workspace: str, fc: str, fields: list, where_clause: str,
         A SQL query used to edit specific records in various cursors
     lomr_layer : arcgis.features.Layer
         A Layer object representing one LOMR geometry and its attributes
-    sfha_sdf : pandas.DataFrame
-        The spatial dataframe of new flood areas
+    records : list
+        A list of dicts, where every dict is one row of the dataframe
     """
     # Path to floodplain feature class
     fc_path = os.path.join(workspace, fc)
@@ -192,7 +192,8 @@ def perform_edits(workspace: str, fc: str, fields: list, where_clause: str,
 
     # Add the transformed polygons
     log.info("Adding new polys.")
-    _add_new_polys(sfha_sdf=sfha_sdf, fields=fields, cursor=insert)
+    _add_new_polys(records=records, fields=fields,
+                   polygon=lomr_geom, cursor=insert)
 
     session.stopOperation()
     session.stopEditing(True)
