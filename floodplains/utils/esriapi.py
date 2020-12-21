@@ -48,7 +48,7 @@ def create_spatial_filter(in_layer: arcgis.features.layer.FeatureLayer,
 
 
 def query_lomr(in_layer: arcgis.features.layer.FeatureLayer,
-               clause: str, g_filter: dict, sr: int):
+               clause: str, g_filter: dict, sr: int, transform: int):
     """Returns all the LOMR boundaries that appear inside the spatial
     filter based on the clause used.
 
@@ -64,6 +64,8 @@ def query_lomr(in_layer: arcgis.features.layer.FeatureLayer,
         LOMR boundaries
     sr : int
         The output spatial reference
+    transform : int
+        The WKID of the datum transformation to apply
 
     Returns
     -------
@@ -73,7 +75,8 @@ def query_lomr(in_layer: arcgis.features.layer.FeatureLayer,
     # Query the feature service
     lomrs = in_layer.query(where=clause,
                            geometry_filter=g_filter,
-                           out_sr=sr)
+                           out_sr=sr,
+                           datum_transformation=transform)
     # Drop duplicate Case Numbers and Geometries if features are returned
     if lomrs.features:
         temp = lomrs.sdf
@@ -87,7 +90,7 @@ def query_lomr(in_layer: arcgis.features.layer.FeatureLayer,
 
 def extract_sfha(in_layer: arcgis.features.layer.FeatureLayer,
                  boundaries: arcgis.features.layer.FeatureSet,
-                 clause: str, out_fields: list, sr: int):
+                 clause: str, out_fields: list, sr: int, transform: int):
     """Extracts all the SFHA floodplains that are within some boundaries
     into a pandas dataframe.
 
@@ -109,6 +112,8 @@ def extract_sfha(in_layer: arcgis.features.layer.FeatureLayer,
         The fields to output as columns in the spatial dataframe
     sr : int
         The output spatial reference
+    transform : int
+        The WKID of the datum transformation to apply
 
     Returns
     -------
@@ -119,7 +124,8 @@ def extract_sfha(in_layer: arcgis.features.layer.FeatureLayer,
         based on ID
     """
     # Query the feature service
-    all_sfha = in_layer.query(where=clause, out_fields=out_fields, out_sr=sr)
+    all_sfha = in_layer.query(where=clause, out_fields=out_fields,
+                              out_sr=sr, datum_transformation=transform)
 
     # Create an empty dataframe with the same schema as the output
     all_sfha_sdf = all_sfha.sdf

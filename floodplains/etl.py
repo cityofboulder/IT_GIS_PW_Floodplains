@@ -62,7 +62,9 @@ def transform(sfha_sdf, lomr_fs):
     """
     # Step 5: Query the city's floodplain feature service
     city_flood = arcgis.features.FeatureLayer(config.urls["city_flood"])
-    compare = city_flood.query(out_fields=['DRAINAGE'], out_sr=config.sr)
+    compare = city_flood.query(out_fields=['DRAINAGE'],
+                               out_sr=config.sr,
+                               datum_transformation=config.trans)
 
     # Step 6: Calculate all fields
     log.info("Calculating DRAINAGE.")
