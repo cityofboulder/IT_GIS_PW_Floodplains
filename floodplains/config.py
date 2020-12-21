@@ -55,6 +55,7 @@ last_date = config["DATA"]["last_checked_date"]
 urls = config["DATA"]["urls"]
 sde = config["DATA"]["sde"]
 sr = sde["spatialref"]
+trans = sde["transformation"]
 fc_name = sde["feature"]["name"]
 fc_fields = sde["feature"]["fields"]
 
