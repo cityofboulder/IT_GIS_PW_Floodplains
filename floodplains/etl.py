@@ -28,13 +28,12 @@ def extract():
 
     # Step 2: Create spatial filter object for city limits
     log.info("Creating spatial filter of city limits.")
-    geom_filter = api.create_spatial_filter(city, config.sr, config.trans)
+    geom_filter = api.create_spatial_filter(city, config.sr)
 
     # Step 3: Extract LOMRs based on spatial filters and SQL query
     log.info("Querying the LOMR feature service.")
     where = f"STATUS = 'Effective' AND EFF_DATE > '{config.last_date}'"
-    boulder_lomrs = api.query_lomr(
-        lomr, where, geom_filter, config.sr, config.trans)
+    boulder_lomrs = api.query_lomr(lomr, where, geom_filter, config.sr)
 
     # Step 4: If there are "more than zero" new LOMRs, continue ETL process
     if len(boulder_lomrs.features) > 0:
@@ -43,7 +42,7 @@ def extract():
         fields = ['FLD_AR_ID', 'STUDY_TYP', 'FLD_ZONE',
                   'ZONE_SUBTY', 'SFHA_TF', 'STATIC_BFE', 'DEPTH']
         fema_flood, summary = api.extract_sfha(
-            sfha, boulder_lomrs, where, fields, config.sr, config.trans)
+            sfha, boulder_lomrs, where, fields, config.sr)
         return fema_flood, boulder_lomrs
     else:
         return None, None
@@ -63,9 +62,7 @@ def transform(sfha_sdf, lomr_fs):
     """
     # Step 5: Query the city's floodplain feature service
     city_flood = arcgis.features.FeatureLayer(config.urls["city_flood"])
-    compare = city_flood.query(out_fields=['DRAINAGE'],
-                               out_sr=config.sr,
-                               datum_transformation=config.trans)
+    compare = city_flood.query(out_fields=['DRAINAGE'], out_sr=config.sr)
 
     # Step 6: Calculate all fields
     log.info("Calculating DRAINAGE.")

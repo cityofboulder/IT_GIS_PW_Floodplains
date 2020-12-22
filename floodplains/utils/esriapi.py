@@ -8,7 +8,7 @@ log = config.logging.getLogger(__name__)
 
 
 def create_spatial_filter(in_layer: arcgis.features.layer.FeatureLayer,
-                          sr: int, transform: int) -> dict:
+                          sr: int) -> dict:
     """Creates a spatial filter of dissolved geometries for use in
     querying ESRI's REST API.
 
@@ -21,8 +21,6 @@ def create_spatial_filter(in_layer: arcgis.features.layer.FeatureLayer,
         A feature layer derived from a feature or map service endpoint
     sr : int
         The output spatial reference
-    transform : int
-        The WKID of the datum transformation to apply
 
     Returns
     -------
@@ -34,7 +32,7 @@ def create_spatial_filter(in_layer: arcgis.features.layer.FeatureLayer,
     temp_gis = arcgis.gis.GIS()
 
     # Get the set of features within the FeatureLayer
-    feature_set = in_layer.query(out_sr=sr, datum_transformation=transform)
+    feature_set = in_layer.query(out_sr=sr)
 
     # Union all output features
     geoms = [poly.geometry for poly in feature_set.features]
@@ -50,7 +48,7 @@ def create_spatial_filter(in_layer: arcgis.features.layer.FeatureLayer,
 
 
 def query_lomr(in_layer: arcgis.features.layer.FeatureLayer,
-               clause: str, g_filter: dict, sr: int, transform: int):
+               clause: str, g_filter: dict, sr: int):
     """Returns all the LOMR boundaries that appear inside the spatial
     filter based on the clause used.
 
@@ -66,8 +64,6 @@ def query_lomr(in_layer: arcgis.features.layer.FeatureLayer,
         LOMR boundaries
     sr : int
         The output spatial reference
-    transform : int
-        The WKID of the datum transformation to apply
 
     Returns
     -------
@@ -77,8 +73,7 @@ def query_lomr(in_layer: arcgis.features.layer.FeatureLayer,
     # Query the feature service
     lomrs = in_layer.query(where=clause,
                            geometry_filter=g_filter,
-                           out_sr=sr,
-                           datum_transformation=transform)
+                           out_sr=sr)
     # Drop duplicate Case Numbers and Geometries if features are returned
     if lomrs.features:
         temp = lomrs.sdf
@@ -92,7 +87,7 @@ def query_lomr(in_layer: arcgis.features.layer.FeatureLayer,
 
 def extract_sfha(in_layer: arcgis.features.layer.FeatureLayer,
                  boundaries: arcgis.features.layer.FeatureSet,
-                 clause: str, out_fields: list, sr: int, transform: int):
+                 clause: str, out_fields: list, sr: int):
     """Extracts all the SFHA floodplains that are within some boundaries
     into a pandas dataframe.
 
@@ -114,8 +109,6 @@ def extract_sfha(in_layer: arcgis.features.layer.FeatureLayer,
         The fields to output as columns in the spatial dataframe
     sr : int
         The output spatial reference
-    transform : int
-        The WKID of the datum transformation to apply
 
     Returns
     -------
@@ -126,8 +119,7 @@ def extract_sfha(in_layer: arcgis.features.layer.FeatureLayer,
         based on ID
     """
     # Query the feature service
-    all_sfha = in_layer.query(where=clause, out_fields=out_fields,
-                              out_sr=sr, datum_transformation=transform)
+    all_sfha = in_layer.query(where=clause, out_fields=out_fields, out_sr=sr)
 
     # Create an empty dataframe with the same schema as the output
     all_sfha_sdf = all_sfha.sdf
