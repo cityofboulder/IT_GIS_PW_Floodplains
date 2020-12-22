@@ -24,6 +24,9 @@ if __name__ == "__main__":
                 transformed = etl.transform(new_sfhas, new_lomrs)
                 log.info("Initiating load.")
                 email_table = etl.load(transformed, new_lomrs)
+                log.info("Notifying folks of changes.")
+                etl.notify(email_table)
+                log.info("Process finished!")
             else:
                 log.info("No changes were made in Boulder.")
                 body = email.email_body("No changes were made in Boulder.")

@@ -147,6 +147,34 @@ def load(sfha_sdf, lomr_fs):
     return email_table
 
 
-# NOTIFY
-# Step 7a: Notify steward of new version edits
-# Step 7b: Notify SMEs that edits are pending and new LOMRs are available
+def notify(table: str):
+    # Step 11: Notify steward of new version edits
+    body = email.email_body(("New effective LOMRs exist within Boulder city "
+                             "limits. QC the GISSCR.UTIL_FloodplainEdits "
+                             "version by verifying that: <ul>"
+                             "<li>Existing delineations are cut at LOMR "
+                             "boundaries</li>"
+                             "<li>Edits were only made within LOMR areas</li>"
+                             "<li>New deliniations inside the LOMR tie in to "
+                             "existing delineations at the LOMR boundary</li>"
+                             "<li>Edited polygons are dissolved by shared "
+                             "attributes</li>"
+                             "<li>Drainage designations make sense for new "
+                             "polygons</li></ul>"))
+    email.send_email(sender=config.sender,
+                     password=config.password,
+                     recipients=config.steward,
+                     body=body)
+
+    # Step 12: Notify SMEs that edits are pending and new LOMRs are available
+    insert = ("New effective LOMRs exist within Boulder's city limits. "
+              "Your friendly GIS folks have just received a notification "
+              "to incorporate new floodplain delineations into the city's "
+              "GIS layer. Here is a summary of changes since the last time "
+              "our script was run: <br><br>")
+    insert += table
+    body = email.email_body(insert)
+    email.send_email(sender=config.sender,
+                     password=config.password,
+                     recipients=config.steward,
+                     body=body)
