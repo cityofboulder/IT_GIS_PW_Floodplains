@@ -23,7 +23,7 @@ if __name__ == "__main__":
                 log.info("Initiating transformation.")
                 transformed = etl.transform(new_sfhas, new_lomrs)
                 log.info("Initiating load.")
-                etl.load(transformed, new_lomrs)
+                email_table = etl.load(transformed, new_lomrs)
             else:
                 log.info("No changes were made in Boulder.")
                 body = email.email_body("No changes were made in Boulder.")
