@@ -73,7 +73,8 @@ def query_lomr(in_layer: arcgis.features.layer.FeatureLayer,
     # Query the feature service
     lomrs = in_layer.query(where=clause,
                            geometry_filter=g_filter,
-                           out_sr=sr)
+                           out_sr=sr,
+                           datum_transformation=1478)
     # Drop duplicate Case Numbers and Geometries if features are returned
     if lomrs.features:
         temp = lomrs.sdf
@@ -119,7 +120,10 @@ def extract_sfha(in_layer: arcgis.features.layer.FeatureLayer,
         based on ID
     """
     # Query the feature service
-    all_sfha = in_layer.query(where=clause, out_fields=out_fields, out_sr=sr)
+    all_sfha = in_layer.query(where=clause,
+                              out_fields=out_fields,
+                              out_sr=sr,
+                              datum_transformation=1478)
 
     # Create an empty dataframe with the same schema as the output
     all_sfha_sdf = all_sfha.sdf
