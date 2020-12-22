@@ -35,7 +35,9 @@ def extract():
 
     # Step 3: Extract LOMRs based on spatial filters and SQL query
     log.info("Querying the LOMR feature service.")
-    where = f"STATUS = 'Effective' AND EFF_DATE > '{config.last_date}'"
+    city_flood = arcgis.features.FeatureLayer(config.urls["city_flood"])
+    last_date = api.last_checked_date(city_flood)
+    where = f"STATUS = 'Effective' AND EFF_DATE > '{last_date}'"
     boulder_lomrs = api.query_lomr(lomr, where, geom_filter, config.sr)
 
     # Step 4: If there are "more than zero" new LOMRs, continue ETL process
