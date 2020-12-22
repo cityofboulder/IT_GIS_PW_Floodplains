@@ -1,10 +1,12 @@
+from datetime import datetime
+
 import arcgis
 
 import floodplains.config as config
 import floodplains.utils.editdb as edit
+import floodplains.utils.email as email
 import floodplains.utils.esriapi as api
 import floodplains.utils.managedb as db
-import floodplains.utils.email as email
 
 # Initiate a logger for etl
 log = config.logging.getLogger(__name__)
@@ -131,7 +133,8 @@ def load(sfha_sdf, lomr_fs):
     for lomr in lomr_fs.features:
         # Summarize the LOMR for an email
         lomr_id = lomr.attributes["CASE_NO"]
-        lomr_date = str(lomr.attributes["EFF_DATE"])
+        ts = lomr.attributes["EFF_DATE"]/1000
+        lomr_date = datetime.fromtimestamp(ts).strftime("%m/%d/%Y")
         email_info.append({"FEMA #": lomr_id, "EFFECTIVE DATE": lomr_date})
         # Perform the edits
         log.info(f"Making edits for {lomr_id}.")
