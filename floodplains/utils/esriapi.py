@@ -17,6 +17,11 @@ def last_checked_date(in_layer):
     ----------
     in_layer : FeatureLayer
         An arcgis feature layer
+
+    Returns
+    -------
+    str
+        The last date the layer was edited by the GISSCR user (e.g. 2019-04-01)
     """
     where = ("LAST_EDITED_USER = 'GISSCR' AND FLOODPLAIN IN ('100 Year', "
              "'Conveyance Zone', '500 Year')")
