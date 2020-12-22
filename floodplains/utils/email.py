@@ -6,6 +6,40 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 
 
+def create_html_table(data: list) -> str:
+    """Creates table encoded in HTML, where columns are sorted based on
+    the column names of each dict key.
+
+    Parameters
+    ----------
+    data : list
+        A list of dicts, where each dict has "col_name": value pairs
+
+    Returns
+    -------
+    str
+        An HTML table
+    """
+
+    # Encode headers into HTML
+    sorted_headers = sorted(data[0])
+    headers = "".join([f"<th>{x}</th>" for x in sorted_headers])
+    header_row = f"<tr>{headers}</tr>"
+
+    # Encode table data
+    table_data = ""
+    for dict_row in data:
+        sorted_data = [dict_row[x] for x in sorted_headers]
+        row_data = "".join([f"<td>{x}</td>" for x in sorted_data])
+        table_row = f"<tr>{row_data}</tr>"
+        table_data += table_row
+
+    # Combine into a single table
+    table = f"<table>{header_row}{table_data}</table>"
+
+    return table
+
+
 def email_body(body: str) -> str:
     """Places the body parameter into an HTML template for the email.
 
