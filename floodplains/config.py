@@ -51,7 +51,6 @@ esri_folder = os.path.abspath(esri["root"])
 aprx_location = os.path.join(esri_folder, esri["aprx_name"])
 
 # Data properties
-last_date = config["DATA"]["last_checked_date"]
 urls = config["DATA"]["urls"]
 sde = config["DATA"]["sde"]
 sr = sde["spatialref"]
