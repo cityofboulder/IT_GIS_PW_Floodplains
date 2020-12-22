@@ -135,7 +135,7 @@ def load(sfha_sdf, lomr_fs):
         lomr_id = lomr.attributes["CASE_NO"]
         ts = lomr.attributes["EFF_DATE"]/1000
         lomr_date = datetime.fromtimestamp(ts).strftime("%m/%d/%Y")
-        email_info.append({"FEMA #": lomr_id, "EFFECTIVE DATE": lomr_date})
+        email_info.append({"FEMA ID": lomr_id, "Valid After": lomr_date})
         # Perform the edits
         log.info(f"Making edits for {lomr_id}.")
         edit.perform_edits(workspace=edit_connect,
@@ -174,7 +174,7 @@ def notify(table: str):
               "Your friendly GIS folks have just received a notification "
               "to incorporate new floodplain delineations into the city's "
               "GIS layer. Here is a summary of changes since the last time "
-              "our script was run: <br><br>")
+              "our script was run: <br>")
     insert += table
     body = email.email_body(insert)
     email.send_email(sender=config.sender,
