@@ -3,8 +3,29 @@ import floodplains.config as config
 import numpy as np
 import pandas as pd
 
+from datetime import datetime
+
 # Initialize log for esriapicalls
 log = config.logging.getLogger(__name__)
+
+
+def last_checked_date(in_layer):
+    """Checks the last time the city's floodplains were edited by the
+    GISSCR user in order to constrain which LOMRs are considered new.
+
+    Parameters
+    ----------
+    in_layer : FeatureLayer
+        An arcgis feature layer
+    """
+    where = ("LAST_EDITED_USER = 'GISSCR' AND FLOODPLAIN IN ('100 Year', "
+             "'Conveyance Zone', '500 Year')")
+    query = in_layer.query(out_fields=["LAST_EDITED_USER", "LAST_EDITED_DATE"],
+                           where=where,
+                           return_geometry=False)
+    ts = max([f.attributes["LAST_EDITED_DATE"] for f in query.features])/1000
+    formatted = datetime.fromtimestamp(ts).strftime("%Y-%m-%d")
+    return formatted
 
 
 def create_spatial_filter(in_layer: arcgis.features.layer.FeatureLayer,
