@@ -26,13 +26,13 @@ if __name__ == "__main__":
                 email_table = etl.load(transformed, new_lomrs)
                 log.info("Notifying folks of changes.")
                 etl.notify(email_table)
-                log.info("Process finished!")
             else:
                 log.info("No changes were made in Boulder.")
                 body = email.email_body("No changes were made in Boulder.")
                 email.send_email(sender=config.sender,
                                  password=config.password,
-                                 recipients=config.steward, body=body)
+                                 recipients=config.steward,
+                                 body=body)
         else:
             log.error("Offline URLs: " + ", ".join(u for u in offline))
             body = email.email_body("The following URLs are offline:<br><br>" +
@@ -44,3 +44,4 @@ if __name__ == "__main__":
         log.exception("Something prevented the script from running.")
     finally:
         list_files(['.sde'], delete=True)
+        log.info("Process finished!")
