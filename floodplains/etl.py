@@ -181,5 +181,5 @@ def notify(table: str):
     body = email.email_body(insert)
     email.send_email(sender=config.sender,
                      password=config.password,
-                     recipients=config.steward,
+                     recipients=config.notification,
                      body=body)
