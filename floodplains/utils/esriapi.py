@@ -10,8 +10,9 @@ log = config.logging.getLogger(__name__)
 
 
 def last_checked_date(in_layer):
-    """Checks the last time the city's floodplains were edited by the
-    GISSCR user in order to constrain which LOMRs are considered new.
+    """Checks the last time the GISSCR user created floodplain delineations in
+    the city's floodplains in order to approximate the last time the script
+    was run.
 
     Parameters
     ----------
@@ -23,12 +24,12 @@ def last_checked_date(in_layer):
     str
         The last date the layer was edited by the GISSCR user (e.g. 2019-04-01)
     """
-    where = ("LAST_EDITED_USER = 'GISSCR' AND FLOODPLAIN IN ('100 Year', "
+    where = ("CREATED_USER = 'GISSCR' AND FLOODPLAIN IN ('100 Year', "
              "'Conveyance Zone', '500 Year')")
-    query = in_layer.query(out_fields=["LAST_EDITED_USER", "LAST_EDITED_DATE"],
+    query = in_layer.query(out_fields=["CREATED_USER", "CREATED_DATE"],
                            where=where,
                            return_geometry=False)
-    ts = max([f.attributes["LAST_EDITED_DATE"] for f in query.features])/1000
+    ts = max([f.attributes["CREATED_DATE"] for f in query.features])/1000
     formatted = datetime.fromtimestamp(ts).strftime("%Y-%m-%d")
     return formatted
 
