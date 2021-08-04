@@ -18,13 +18,12 @@ DATA:
   sde:
     spatialref: 2876 # NAD83(HARN) / Colorado North (ftUS)
     feature: 
-      name: "GISPROD3.UTIL.Floodplain"
+      name: "GISPROD3.UTIL.FloodplainRegulatory"
       fields:
-        - "FLOODPLAIN"
-        - "FEMAZONE"
+        - "FLOODZONE"
+        - "FLOODWAY"
         - "DRAINAGE"
-        - "LIFECYCLE"
-        - "ADOPTDATE"
+        - "EFFDATE"
         - "INEFFDATE"
         - "SOURCE"
         - "SHAPE@"
