@@ -49,7 +49,6 @@ def _edit_existing_polys(fc, fields, where_clause, polygon, date, cursor):
                         new_record[i["SHAPE@"]] = g
                         # change LIFECYCLE and INEFFDATE of the inner geom
                         if polygon.contains(g.centroid):
-                            new_record[i["LIFECYCLE"]] = "Inactive"
                             new_record[i["INEFFDATE"]] = date
                         # convert back to a list in the proper order
                         new_row = tuple(new_record.values())
@@ -98,10 +97,10 @@ def sdf_to_dict(sdf):
     records = sdf.to_dict("records")
     for record in records:
         # Convert timestamps to datetime
-        if pd.notnull(record["ADOPTDATE"]):
-            record["ADOPTDATE"] = record["ADOPTDATE"].to_pydatetime()
+        if pd.notnull(record["EFFDATE"]):
+            record["EFFDATE"] = record["EFFDATE"].to_pydatetime()
         else:
-            record["ADOPTDATE"] = None
+            record["EFFDATE"] = None
         if pd.notnull(record["INEFFDATE"]):
             record["INEFFDATE"] = record["INEFFDATE"].to_pydatetime()
         else:
