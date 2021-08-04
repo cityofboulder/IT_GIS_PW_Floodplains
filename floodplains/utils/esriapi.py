@@ -24,8 +24,8 @@ def last_checked_date(in_layer):
     str
         The last date the layer was edited by the GISSCR user (e.g. 2019-04-01)
     """
-    where = ("CREATED_USER = 'GISSCR' AND FLOODPLAIN IN ('100 Year', "
-             "'Conveyance Zone', '500 Year')")
+    where = ("CREATED_USER = 'GISSCR' AND (FLOODZONE LIKE 'A%' OR FLOODZONE "
+             "IN ('X', 'B'))")
     query = in_layer.query(out_fields=["CREATED_USER", "CREATED_DATE"],
                            where=where,
                            return_geometry=False)
