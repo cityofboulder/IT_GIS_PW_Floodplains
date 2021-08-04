@@ -125,8 +125,7 @@ def load(sfha_sdf, lomr_fs):
     records = edit.sdf_to_dict(sfha_sdf)
 
     # Step 10: For every lomr, perform edits to city floodplains
-    where = ("LIFECYCLE = 'Active' AND FLOODPLAIN IN "
-             "('500 Year', '100 Year', 'Conveyance Zone')")
+    where = "INEFFDATE IS NULL AND (FLOODZONE LIKE 'A%' OR FLOODZONE = 'X')"
     email_info = []
     for lomr in lomr_fs.features:
         # Summarize the LOMR for an email
