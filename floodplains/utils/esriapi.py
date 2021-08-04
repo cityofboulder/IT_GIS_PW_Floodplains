@@ -186,7 +186,7 @@ def extract_sfha(in_layer: arcgis.features.layer.FeatureLayer,
     return subset, catalog
 
 
-def calc_adoptdate(sfha, lomr):
+def calc_effdate(sfha, lomr):
     """Calculates the date a given SFHA was adopted based on the LOMR
     boundary in which it resides.
 
@@ -203,7 +203,7 @@ def calc_adoptdate(sfha, lomr):
     -------
     ESRI Spatial Dataframe
         A copy of the incoming SFHA dataframe, but with a new
-        "ADOPTDATE" field appended.
+        "EFFDATE" field appended.
     """
     # Spatial join of LOMRs and SFHAs
     if not isinstance(sfha, pd.DataFrame):
@@ -212,7 +212,7 @@ def calc_adoptdate(sfha, lomr):
         lomr = lomr.sdf
     new_sdf = sfha.spatial.join(lomr)
 
-    new_sdf.rename(columns={"EFF_DATE": "ADOPTDATE"}, inplace=True)
+    new_sdf.rename(columns={"EFF_DATE": "EFFDATE"}, inplace=True)
     # Return new spatial dataframe
     return new_sdf
 

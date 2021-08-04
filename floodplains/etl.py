@@ -73,8 +73,8 @@ def transform(sfha_sdf, lomr_fs):
     log.info("Calculating DRAINAGE.")
     api.calc_drainages(sfha_sdf, compare, config.sr)
 
-    log.info("Calculating ADOPTDATE.")
-    sfha_sdf = api.calc_adoptdate(sfha_sdf, lomr_fs)
+    log.info("Calculating EFFDATE.")
+    sfha_sdf = api.calc_effdate(sfha_sdf, lomr_fs)
 
     log.info("Calculating INEFFDATE.")
     dups = list(sfha_sdf[sfha_sdf.duplicated(["FLD_AR_ID"])]["FLD_AR_ID"])
