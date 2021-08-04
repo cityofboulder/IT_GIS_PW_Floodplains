@@ -89,10 +89,6 @@ def transform(sfha_sdf, lomr_fs):
     log.info("Calculating FLOODZONE.")
     sfha_sdf["FLOODZONE"] = sfha_sdf.apply(api.calc_floodzone, axis=1)
 
-    log.info("Calculating LIFECYCLE.")
-    sfha_sdf.loc[sfha_sdf["INEFFDATE"].notnull(), "LIFECYCLE"] = "Inactive"
-    sfha_sdf.loc[sfha_sdf["INEFFDATE"].isnull(), "LIFECYCLE"] = "Active"
-
     log.info("Calculating SOURCE.")
     sfha_sdf["SOURCE"] = "FEMA"
 
