@@ -283,7 +283,7 @@ def calc_floodplain(row):
     return floodplain
 
 
-def calc_femazone(row):
+def calc_floodzone(row):
     """Extracts the FEMAZONE of an SFHA based on each row's attributes.
 
     This function acts on individual rows of a pandas DataFrame using
