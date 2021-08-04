@@ -252,9 +252,9 @@ def calc_ineffdate(row, date_dict: dict):
     return ineff_date
 
 
-def calc_floodplain(row):
-    """Extracts the floodplain designation of an SFHA based on each
-    row's attributes.
+def calc_floodway(row):
+    """Extracts the floodway (e.g. Conveyance Zone) designation of an SFHA
+    based on each row's attributes.
 
     This function acts on individual rows of a pandas DataFrame using
     the apply built-in.
@@ -271,16 +271,10 @@ def calc_floodplain(row):
     """
     if row["SFHA_TF"] == "T":
         if row["ZONE_SUBTY"] == 'FLOODWAY':
-            floodplain = 'Conveyance Zone'
+            floodway = 1
         else:
-            floodplain = '100 Year'
-    else:
-        if row["ZONE_SUBTY"] in ('0.2 PCT ANNUAL CHANCE FLOOD HAZARD',
-                                 'AREA WITH REDUCED FLOOD RISK DUE TO LEVEE'):
-            floodplain = '500 Year'
-        else:
-            floodplain = None
-    return floodplain
+            floodway = 0
+    return floodway
 
 
 def calc_floodzone(row):

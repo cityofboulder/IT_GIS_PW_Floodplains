@@ -83,8 +83,8 @@ def transform(sfha_sdf, lomr_fs):
     sfha_sdf["INEFFDATE"] = sfha_sdf.apply(
         api.calc_ineffdate, date_dict=dup_dates, axis=1)
 
-    log.info("Calculating FLOODPLAIN.")
-    sfha_sdf["FLOODPLAIN"] = sfha_sdf.apply(api.calc_floodplain, axis=1)
+    log.info("Calculating FLOODWAY.")
+    sfha_sdf["FLOODWAY"] = sfha_sdf.apply(api.calc_floodway, axis=1)
 
     log.info("Calculating FLOODZONE.")
     sfha_sdf["FLOODZONE"] = sfha_sdf.apply(api.calc_floodzone, axis=1)
