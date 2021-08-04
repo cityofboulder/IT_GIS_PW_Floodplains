@@ -31,13 +31,14 @@ DATA:
 # Email recipients
 EMAIL:
   lomr-notification:
+    - "publicworksir@bouldercolorado.gov"
+    - "floodpermits@bouldercolorado.gov"
     - "knappk@bouldercolorado.gov"
     - "olsenl@bouldercolorado.gov"
     - "colemanb@bouldercolorado.gov"
     - "shepc2@bouldercolorado.gov"
-    - "wellerc@bouldercolorado.gov"
   data-steward:
-    - "nestlerj@bouldercolorado.gov"
+    - "publicworksir@bouldercolorado.gov"
 
 # Logging Configurations
 LOGGING:
