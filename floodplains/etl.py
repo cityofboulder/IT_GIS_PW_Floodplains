@@ -31,7 +31,7 @@ def extract():
 
     # Step 2: Create spatial filter object for city limits
     log.info("Creating spatial filter of city limits.")
-    geom_filter = api.create_spatial_filter(city, config.sr)
+    geom_filter = api.create_spatial_filter(city, config.sr, "TYPE = 'City'")
 
     # Step 3: Extract LOMRs based on spatial filters and SQL query
     log.info("Querying the LOMR feature service.")
