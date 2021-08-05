@@ -26,8 +26,8 @@ def extract():
     # Step 1: Identify relevant feature services
     city = arcgis.features.FeatureLayer(config.urls["city"])
     nfhl = arcgis.features.FeatureLayerCollection(config.urls["nfhl"])
-    lomr = nfhl.layers[1]
-    sfha = nfhl.layers[28]
+    lomr = list(filter(lambda x: x.url.endswith('1'),  nfhl.layers))[0]
+    sfha = list(filter(lambda x: x.url.endswith('28'),  nfhl.layers))[0]
 
     # Step 2: Create spatial filter object for city limits
     log.info("Creating spatial filter of city limits.")
