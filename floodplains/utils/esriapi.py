@@ -35,7 +35,7 @@ def last_checked_date(in_layer):
 
 
 def create_spatial_filter(in_layer: arcgis.features.layer.FeatureLayer,
-                          sr: int) -> dict:
+                          sr: int, where: str = "1=1") -> dict:
     """Creates a spatial filter of dissolved geometries for use in
     querying ESRI's REST API.
 
@@ -48,6 +48,8 @@ def create_spatial_filter(in_layer: arcgis.features.layer.FeatureLayer,
         A feature layer derived from a feature or map service endpoint
     sr : int
         The output spatial reference
+    where : str
+        The query string used to filter data from the FeatureLayer
 
     Returns
     -------
@@ -59,7 +61,7 @@ def create_spatial_filter(in_layer: arcgis.features.layer.FeatureLayer,
     temp_gis = arcgis.gis.GIS()
 
     # Get the set of features within the FeatureLayer
-    feature_set = in_layer.query(out_sr=sr)
+    feature_set = in_layer.query(out_sr=sr, where=where)
 
     # Union all output features
     geoms = [poly.geometry for poly in feature_set.features]
