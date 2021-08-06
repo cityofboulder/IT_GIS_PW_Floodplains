@@ -271,11 +271,10 @@ def calc_floodway(row):
     str
         The SFHA floodplain designation
     """
+    floodway = 0
     if row["SFHA_TF"] == "T":
         if row["ZONE_SUBTY"] == 'FLOODWAY':
             floodway = 1
-        else:
-            floodway = 0
     return floodway
 
 
