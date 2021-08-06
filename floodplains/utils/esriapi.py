@@ -238,7 +238,7 @@ def calc_ineffdate(row, date_dict: dict):
         The timestamp a polygon went ineffective, or None
     """
     fema_id = row["FLD_AR_ID"]
-    adopt_date = row["ADOPTDATE"]
+    adopt_date = row["EFFDATE"]
     ineff_date = None
     try:
         idx = date_dict[fema_id].index(adopt_date)
