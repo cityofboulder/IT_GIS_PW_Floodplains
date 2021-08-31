@@ -238,7 +238,7 @@ def calc_ineffdate(row, date_dict: dict):
         The timestamp a polygon went ineffective, or None
     """
     fema_id = row["FLD_AR_ID"]
-    adopt_date = row["ADOPTDATE"]
+    adopt_date = row["EFFDATE"]
     ineff_date = None
     try:
         idx = date_dict[fema_id].index(adopt_date)
@@ -271,11 +271,10 @@ def calc_floodway(row):
     str
         The SFHA floodplain designation
     """
+    floodway = 0
     if row["SFHA_TF"] == "T":
         if row["ZONE_SUBTY"] == 'FLOODWAY':
             floodway = 1
-        else:
-            floodway = 0
     return floodway
 
 
@@ -374,10 +373,17 @@ def calc_drainages(to_calc, comparison, spatial_ref: int):
             A point geometry projected to the parent function's
             spatial_ref
         """
-        rand = row["SHAPE"].as_shapely.representative_point()
-        point = arcgis.geometry.Geometry(
-            {"x": rand.x, "y": rand.y,
-                "spatialReference": {"wkid": spatial_ref}})
+        shapely_shape = row["SHAPE"].as_shapely
+        if shapely_shape:
+            rand = shapely_shape.representative_point()
+            point = arcgis.geometry.Geometry(
+                {"x": rand.x, "y": rand.y,
+                    "spatialReference": {"wkid": spatial_ref}})
+        else:
+            label = row["SHAPE"].as_arcpy.labelPoint
+            point = arcgis.geometry.Geometry(
+                {"x": label.X, "y": label.Y,
+                    "spatialReference": {"wkid": spatial_ref}})
         return point
 
     def check_within(row):

@@ -28,7 +28,10 @@ if __name__ == "__main__":
                 etl.notify(email_table)
             else:
                 log.info("No changes were made in Boulder.")
-                body = email.email_body("No changes were made in Boulder.")
+                body = email.email_body(
+                    ("No changes have been made to floodplains in Boulder "
+                     "since the GISSCR user last edited floodplains in "
+                     "GISPROD3."))
                 email.send_email(sender=config.sender,
                                  password=config.password,
                                  recipients=config.steward,
