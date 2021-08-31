@@ -92,6 +92,9 @@ def transform(sfha_sdf, lomr_fs):
     log.info("Calculating SOURCE.")
     sfha_sdf["SOURCE"] = "FEMA"
 
+    log.info("Calculating REGULATORY.")
+    sfha_sdf["REGULATORY"] = 1
+
     # Step 7: Drop all non-essential fields and rows
     log.info("Dissolving SHAPE.")
     essential = ["SHAPE" if f == "SHAPE@" else f for f in config.fc_fields]
