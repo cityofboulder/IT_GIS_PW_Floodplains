@@ -173,10 +173,12 @@ def notify(table: str):
 
     # Step 12: Notify SMEs that edits are pending and new LOMRs are available
     insert = ("New effective LOMRs exist within Boulder's city limits. "
-              "Your friendly GIS folks have just received a notification "
-              "to incorporate new floodplain delineations into the city's "
-              "GIS layer. Here is a summary of changes since the last time "
-              "our script was run: <br>")
+              "Edits are not yet incorporated into the city's data, but "
+              "your friendly GIS folks have just received a notification "
+              "to do so. The High Hazard Zone is updated separately, please "
+              "contact the Floodplain Administrator for details. "
+              "Here is a summary of changes since the last time our script "
+              "was run: <br>")
     insert += table
     body = email.email_body(insert)
     email.send_email(sender=config.sender,
