@@ -67,6 +67,7 @@ LOGGING:
       class: logging.handlers.SMTPHandler
       mailhost: ["smtp.office365.com", 587]
       fromaddr: "noreply@bouldercolorado.gov"
+      toaddrs: 'nestlerj@bouldercolorado.gov'
       subject: "An error halted the Floodplain script"
       secure: []
       level: ERROR
