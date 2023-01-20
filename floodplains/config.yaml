@@ -34,7 +34,6 @@ EMAIL:
   lomr-notification:
     - "publicworksir@bouldercolorado.gov"
     - "floodpermits@bouldercolorado.gov"
-    - "knappk@bouldercolorado.gov"
     - "olsenl@bouldercolorado.gov"
     - "colemanb@bouldercolorado.gov"
     - "shepc2@bouldercolorado.gov"
@@ -95,8 +94,8 @@ LOGGING:
 # Database configurations, credentials in separate untracked file
 DATABASE:
   connections:
-    read: "S:\\GIS\\Share\\DatabaseConnections\\SQLGISProd3\\gis on gisprod3.sde"
-    edit: "S:\\GIS\\Share\\DatabaseConnections\\SQLGISProd3\\secured_sde_files\\gisscr on gisprod3.sde"
+    read: "S:\\GIS\\Share\\DatabaseConnections (GISPROD3)\\SQLGISProd3\\gis on gisprod3.sde"
+    edit: "S:\\GIS\\Share\\DatabaseConnections (GISPROD3)\\SQLGISProd3\\secured_sde_files\\gisscr on gisprod3.sde"
   info:
     database_platform: "SQL_SERVER"
     instance: "GISData"
