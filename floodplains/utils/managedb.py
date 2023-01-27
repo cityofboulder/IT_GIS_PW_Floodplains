@@ -1,10 +1,30 @@
 import os
 
 import arcpy
+from arcpy import ClearWorkspaceCache_management
 import floodplains.config as config
 
 log = config.logging.getLogger(__name__)
 
+
+def clear_cache(func):
+    """Clears the workspace cache.
+
+    Used as a decorator on any function that deals with version management.
+    See this post for reasoning:
+    https://community.esri.com/t5/geoprocessing-questions/createversion-tool-doesn-t-like-my-workspace/m-p/733989#M24189
+
+    Parameters
+    ----------
+    func : function
+        The decorated function
+    """
+    def wrapper(*args, **kwargs):
+        log.debug("Clearing workspace cache...")
+        ClearWorkspaceCache_management()
+        value = func(*args, **kwargs)
+        return value
+    return wrapper
 
 def _create_version(version_kwargs: dict):
     """Creates a version using the dict variables defined in the project
@@ -32,6 +52,7 @@ def _create_version(version_kwargs: dict):
                          "Retrying."))
 
 
+@clear_cache
 def create_versioned_connection(version_kwargs: dict,
                                 connect_kwargs: dict) -> str:
     """Creates an sde connection on disk and returns the path to that
@@ -60,6 +81,7 @@ def create_versioned_connection(version_kwargs: dict,
     return filepath
 
 
+@clear_cache
 def remove_version(connection: str, version: str) -> None:
     """Removes the specified version from the database connection
 
